@@ -1,0 +1,67 @@
+/* app/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --electric: #2563eb;
+    --neon:     #06b6d4;
+    --purple:   #7c3aed;
+    --green:    #10b981;
+    --rose:     #f43f5e;
+    --surface:  #07070f;
+    --card:     #13131e;
+    --border:   rgba(255,255,255,0.07);
+  }
+  * { @apply border-border; }
+  html { scroll-behavior: smooth; }
+  body { @apply bg-surface text-foreground; }
+  ::selection { background: rgba(37,99,235,0.3); }
+}
+
+@layer utilities {
+  .font-syne  { font-family: var(--font-syne), sans-serif; }
+  .font-inter { font-family: var(--font-inter), sans-serif; }
+  .bg-surface { background-color: var(--surface); }
+  .text-electric { color: var(--electric); }
+  .text-neon     { color: var(--neon); }
+  .border-border { border-color: var(--border); }
+
+  /* Gradient text utility */
+  .gradient-text {
+    @apply bg-gradient-to-r from-electric to-neon bg-clip-text text-transparent;
+  }
+
+  /* Glow utilities */
+  .glow-electric { box-shadow: 0 0 20px rgba(37,99,235,0.4); }
+  .glow-neon     { box-shadow: 0 0 20px rgba(6,182,212,0.4); }
+
+  /* Card utility */
+  .glass-card {
+    background: rgba(19,19,30,0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+
+  /* Scrollbar */
+  .custom-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+  .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+  .custom-scroll::-webkit-scrollbar-thumb { background: rgba(37,99,235,0.4); border-radius: 2px; }
+}
+
+/* Neon breath animation */
+@keyframes neon-breath {
+  0%, 100% { opacity: 0.6; box-shadow: 0 0 10px rgba(37,99,235,0.3); }
+  50%       { opacity: 1;   box-shadow: 0 0 24px rgba(37,99,235,0.8), 0 0 40px rgba(6,182,212,0.3); }
+}
+.neon-breath { animation: neon-breath 2.4s ease-in-out infinite; }
+
+/* Grid background */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(37,99,235,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,99,235,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
