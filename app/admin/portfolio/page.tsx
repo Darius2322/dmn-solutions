@@ -2,9 +2,9 @@
 'use client';
 import { useState, useTransition, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Pencil, Trash2, ExternalLink, Star, StarOff, RefreshCw, X, Save, Image, Triangle, Download, CheckCircle2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, ExternalLink, Star, StarOff, RefreshCw, X, Save, Image, Triangle, Download, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
-import { getPortfolio, createPortfolioItem, updatePortfolioItem, deletePortfolioItem, getVercelProjects, importVercelProjectToPortfolio } from '@/lib/actions';
+import { getAllPortfolio, createPortfolioItem, updatePortfolioItem, deletePortfolioItem, togglePortfolioHidden, getVercelProjects, importVercelProjectToPortfolio } from '@/lib/actions';
 import type { Portfolio } from '@/lib/supabase/types';
 
 const CATEGORIES = [
@@ -176,12 +176,13 @@ function ProjectModal({
 
 // ── Project Card ──────────────────────────────────────────────────────────────
 function ProjectCard({
-  item, onEdit, onDelete, onToggleFeatured,
+  item, onEdit, onDelete, onToggleFeatured, onToggleHidden,
 }: {
   item: Portfolio;
   onEdit: (i: Portfolio) => void;
   onDelete: (i: Portfolio) => void;
   onToggleFeatured: (i: Portfolio) => void;
+  onToggleHidden: (i: Portfolio) => void;
 }) {
   return (
     <motion.div
@@ -189,7 +190,7 @@ function ProjectCard({
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
-      className="glass-card overflow-hidden group"
+      className={`glass-card overflow-hidden group ${item.hidden ? 'opacity-55' : ''}`}
     >
       {/* Image */}
       <div className="relative h-40 bg-gradient-to-br from-electric/15 to-neon/5">
@@ -203,6 +204,11 @@ function ProjectCard({
         {item.featured && (
           <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-amber-500 text-black text-[0.65rem] font-syne font-black">
             ⭐ Featured
+          </span>
+        )}
+        {item.hidden && (
+          <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-gray-600 text-white text-[0.65rem] font-syne font-black flex items-center gap-1" style={{ marginTop: item.featured ? '26px' : 0 }}>
+            <EyeOff size={10} /> Hidden
           </span>
         )}
         <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -237,7 +243,7 @@ function ProjectCard({
             ))}
           </div>
         )}
-        <div className="flex gap-2">
+        <div className="flex gap-2 mb-2">
           <button onClick={() => onEdit(item)}
             className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-electric/30 text-electric text-xs font-syne font-bold hover:bg-electric/10 transition-colors">
             <Pencil size={12} /> Edit
@@ -247,6 +253,14 @@ function ProjectCard({
             <Trash2 size={12} /> Delete
           </button>
         </div>
+        <button onClick={() => onToggleHidden(item)}
+          className={`w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border text-xs font-syne font-bold transition-colors ${
+            item.hidden
+              ? 'border-green-500/30 text-green-400 hover:bg-green-500/10'
+              : 'border-white/[0.1] text-white/50 hover:bg-white/[0.05]'
+          }`}>
+          {item.hidden ? <><Eye size={12} /> Show on Site</> : <><EyeOff size={12} /> Hide from Site</>}
+        </button>
       </div>
     </motion.div>
   );
@@ -410,7 +424,7 @@ export default function AdminPortfolioPage() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    try { setItems(await getPortfolio()); }
+    try { setItems(await getAllPortfolio()); }
     catch { toast.error('Failed to load portfolio'); }
     finally { setLoading(false); }
   }, []);
@@ -429,6 +443,14 @@ export default function AdminPortfolioPage() {
     start(async () => {
       const res = await updatePortfolioItem(item.id, { featured: !item.featured });
       if (res.success) { toast.success(item.featured ? 'Removed from featured' : 'Marked as featured ⭐'); load(); }
+      else toast.error(res.error);
+    });
+  }
+
+  function handleToggleHidden(item: Portfolio) {
+    start(async () => {
+      const res = await togglePortfolioHidden(item.id, !item.hidden);
+      if (res.success) { toast.success(item.hidden ? '✅ Project visible on site' : '👁️ Project hidden from site'); load(); }
       else toast.error(res.error);
     });
   }
@@ -497,6 +519,7 @@ export default function AdminPortfolioPage() {
                 onEdit={i => setModalItem(i)}
                 onDelete={i => setDeleteTarget(i)}
                 onToggleFeatured={handleToggleFeatured}
+                onToggleHidden={handleToggleHidden}
               />
             ))}
           </AnimatePresence>
