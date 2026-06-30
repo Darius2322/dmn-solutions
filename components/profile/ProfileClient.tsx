@@ -301,7 +301,7 @@ export function ProfileClient({ user, profile, reviews, requests, comments, badg
         <motion.div
           className="absolute md:relative z-20 md:z-auto h-full md:flex"
           initial={false}
-          animate={{ x: sidebarOpen || window?.innerWidth >= 768 ? 0 : -280 }}
+          animate={{ x: sidebarOpen || (typeof window !== 'undefined' && window.innerWidth >= 768) ? 0 : -280 }}
           transition={{ type: 'spring', stiffness: 320, damping: 30 }}
         >
           {Sidebar}
