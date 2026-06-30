@@ -259,6 +259,95 @@ export async function removeMember(userId: string): Promise<ActionResult> {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// VERCEL INTEGRATION — import deployed projects directly into portfolio
+// ═══════════════════════════════════════════════════════════════════════════
+
+interface VercelProject {
+  id: string;
+  name: string;
+  framework: string | null;
+  link?: { type: string; repo?: string; org?: string };
+  latestDeployments?: { url: string; createdAt: number; readyState: string }[];
+}
+
+/** Fetch the admin's Vercel projects using their personal VERCEL_API_TOKEN env var. */
+export async function getVercelProjects(): Promise<
+  ActionResult<{ id: string; name: string; url: string; framework: string | null }[]>
+> {
+  try {
+    await requireAdmin();
+    const token = process.env.VERCEL_API_TOKEN;
+    if (!token) {
+      return { success: false, error: 'VERCEL_API_TOKEN is not configured. Add it in your environment variables.' };
+    }
+
+    const teamId = process.env.VERCEL_TEAM_ID; // optional, only needed for team accounts
+    const url = `https://api.vercel.com/v9/projects${teamId ? `?teamId=${teamId}` : ''}`;
+
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      return { success: false, error: body?.error?.message ?? `Vercel API error (${res.status})` };
+    }
+
+    const data = await res.json();
+    const projects: VercelProject[] = data.projects ?? [];
+
+    const formatted = projects.map((p) => {
+      const latest = p.latestDeployments?.[0];
+      const liveUrl = latest?.url ? `https://${latest.url}` : `https://${p.name}.vercel.app`;
+      return {
+        id: p.id,
+        name: p.name,
+        url: liveUrl,
+        framework: p.framework,
+      };
+    });
+
+    return { success: true, data: formatted };
+  } catch (e: unknown) {
+    return { success: false, error: (e as Error).message };
+  }
+}
+
+/** Import a Vercel project directly as a new portfolio entry. */
+export async function importVercelProjectToPortfolio(formData: FormData): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const title    = formData.get('title') as string;
+    const url      = formData.get('url') as string;
+    const category = (formData.get('category') as string) || 'web';
+    const framework = formData.get('framework') as string;
+
+    const input = PortfolioSchema.parse({
+      title,
+      description: framework ? `Deployed on Vercel — built with ${framework}.` : 'Deployed on Vercel.',
+      url,
+      image: '',
+      tags: framework ? `Vercel, ${framework}` : 'Vercel',
+      category,
+      featured: false,
+      sort_order: 0,
+    });
+
+    const supabase = createSupabaseServerClient();
+    const { error } = await supabase.from('portfolio').insert(input);
+    if (error) return { success: false, error: error.message };
+
+    revalidatePath('/');
+    revalidatePath('/admin/portfolio');
+    return { success: true };
+  } catch (e: unknown) {
+    return { success: false, error: (e as Error).message };
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
 // DASHBOARD METRICS
 // ═══════════════════════════════════════════════════════════════════════════
 
