@@ -32,7 +32,7 @@ export interface Database {
         Row: {
           id: string; title: string; description: string | null;
           url: string | null; image: string | null; tags: string | null;
-          category: string; featured: boolean; sort_order: number; created_at: string;
+          category: string; featured: boolean; hidden: boolean; sort_order: number; created_at: string;
         };
         Insert: Omit<Database['public']['Tables']['portfolio']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['portfolio']['Insert']>;
