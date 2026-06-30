@@ -73,11 +73,40 @@ export async function deleteService(id: string): Promise<ActionResult> {
 // PORTFOLIO
 // ═══════════════════════════════════════════════════════════════════════════
 
-export async function getPortfolio() {
+export async function getPortfolio(includeHidden = false) {
   const supabase = createSupabaseServerClient();
-  const { data, error } = await supabase.from('portfolio').select('*').order('sort_order').order('created_at', { ascending: false });
+  let q = supabase.from('portfolio').select('*').order('sort_order').order('created_at', { ascending: false });
+  if (!includeHidden) q = q.eq('hidden', false);
+  const { data, error } = await q;
   if (error) throw new Error(error.message);
   return data ?? [];
+}
+
+/** Admin-only: fetch ALL portfolio items including hidden ones */
+export async function getAllPortfolio() {
+  try {
+    await requireAdmin();
+    return await getPortfolio(true);
+  } catch {
+    return [];
+  }
+}
+
+export async function togglePortfolioHidden(id: string, hidden: boolean): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+    const supabase = createSupabaseServerClient();
+    const { data, error } = await supabase.from('portfolio').update({ hidden }).eq('id', id).select();
+    if (error) return { success: false, error: error.message };
+    if (!data || data.length === 0) {
+      return { success: false, error: 'Update blocked by database permissions (RLS). Run the latest schema SQL.' };
+    }
+    revalidatePath('/');
+    revalidatePath('/admin/portfolio');
+    return { success: true };
+  } catch (e: unknown) {
+    return { success: false, error: (e as Error).message };
+  }
 }
 
 export async function createPortfolioItem(raw: PortfolioInput): Promise<ActionResult> {
@@ -108,9 +137,12 @@ export async function deletePortfolioItem(id: string): Promise<ActionResult> {
   try {
     await requireAdmin();
     const supabase = createSupabaseServerClient();
-    const { error } = await supabase.from('portfolio').delete().eq('id', id);
+    const { data, error } = await supabase.from('portfolio').delete().eq('id', id).select();
     if (error) return { success: false, error: error.message };
-    revalidatePath('/'); revalidatePath('/admin');
+    if (!data || data.length === 0) {
+      return { success: false, error: 'Delete blocked by database permissions (RLS). Run the latest schema SQL to add the admin DELETE policy on portfolio.' };
+    }
+    revalidatePath('/'); revalidatePath('/admin'); revalidatePath('/admin/portfolio');
     return { success: true };
   } catch (e: unknown) { return { success: false, error: (e as Error).message }; }
 }
