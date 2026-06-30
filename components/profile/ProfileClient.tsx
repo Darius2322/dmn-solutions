@@ -10,6 +10,7 @@ import {
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import type { User } from '@supabase/supabase-js';
+import { ShareSiteModal } from '@/components/share/ShareSiteModal';
 import type { Profile, Feedback, Request, Comment, Badge, Notification } from '@/lib/supabase/types';
 
 interface ProfileClientProps {
@@ -39,6 +40,7 @@ const STATUS_STYLES: Record<string, string> = {
 export function ProfileClient({ user, profile, reviews, requests, comments, badges, notifications }: ProfileClientProps) {
   const [tab, setTab]         = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const router = useRouter();
   const db = createSupabaseBrowserClient();
   const name = user.user_metadata?.full_name ?? user.email ?? 'Member';
@@ -56,8 +58,7 @@ export function ProfileClient({ user, profile, reviews, requests, comments, badg
   }
 
   function shareProfileSite() {
-    if (navigator.share) navigator.share({ title: 'DMN Solutions', url: window.location.origin });
-    else navigator.clipboard?.writeText(window.location.origin).then(() => alert('Link copied!'));
+    setShareOpen(true);
   }
 
   // ── Sidebar ────────────────────────────────────────────────────────────────
@@ -311,6 +312,8 @@ export function ProfileClient({ user, profile, reviews, requests, comments, badg
           <Panel />
         </main>
       </div>
+
+      <ShareSiteModal open={shareOpen} onClose={() => setShareOpen(false)} />
     </div>
   );
 }
