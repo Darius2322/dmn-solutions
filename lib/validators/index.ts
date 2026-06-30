@@ -23,6 +23,7 @@ export const PortfolioSchema = z.object({
   tags:        z.string().max(200).optional(),
   category:    z.string().max(50).default('business'),
   featured:    z.boolean().default(false),
+  hidden:      z.boolean().default(false),
   sort_order:  z.number().int().min(0).default(0),
 });
 export type PortfolioInput = z.infer<typeof PortfolioSchema>;
