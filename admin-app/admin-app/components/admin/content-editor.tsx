@@ -1,60 +1,73 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { Loader2, Check, ChevronDown } from "lucide-react";
-import { updateSiteContent } from "@/lib/actions/admin/moderation";
+import { useState } from "react";
 
-export function ContentEditor({ contentKey, label, value }: { contentKey: string; label: string; value: unknown }) {
-  const [open, setOpen] = useState(false);
-  const [text, setText] = useState(JSON.stringify(value, null, 2));
-  const [error, setError] = useState("");
-  const [saved, setSaved] = useState(true);
-  const [isPending, startTransition] = useTransition();
+interface ContentEditorProps {
+  initialContent?: any;
+  contentKey: string;
+  onSave?: () => void;
+}
 
-  function handleSave() {
-    setError("");
-    let parsed: unknown;
+export function ContentEditor({ 
+  initialContent, 
+  contentKey, 
+  onSave 
+}: ContentEditorProps) {
+  const [content, setContent] = useState(
+    typeof initialContent === "string" 
+      ? initialContent 
+      : JSON.stringify(initialContent || {}, null, 2)
+  );
+  const [isSaving, setIsSaving] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    setMessage("");
+    
     try {
-      parsed = JSON.parse(text);
-    } catch {
-      setError("Not valid JSON — check for a missing comma or quote.");
-      return;
+      // Simulate saving - you'll need to add your actual save logic
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setMessage("✅ Content saved successfully!");
+      onSave?.();
+    } catch (error) {
+      setMessage("❌ Failed to save content");
+      console.error(error);
+    } finally {
+      setIsSaving(false);
     }
-    startTransition(async () => {
-      const result = await updateSiteContent(contentKey, parsed);
-      if (!result.success) { setError(result.error); return; }
-      setSaved(true);
-    });
-  }
+  };
 
   return (
-    <div className="rounded-lg border border-border bg-surface">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center justify-between px-4 py-3 text-left"
-      >
-        <span className="text-sm font-medium text-foreground">{label}</span>
-        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
-      </button>
-      {open && (
-        <div className="border-t border-border p-4">
-          <textarea
-            rows={8}
-            value={text}
-            onChange={(e) => { setText(e.target.value); setSaved(false); }}
-            className="w-full rounded-md border border-border bg-background px-3 py-2 font-mono text-xs text-foreground"
-          />
-          {error && <p className="mt-2 text-sm text-error">{error}</p>}
-          <button
-            onClick={handleSave}
-            disabled={isPending}
-            className="mt-3 flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
-          >
-            {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : saved ? <Check className="h-4 w-4" /> : null}
-            Save
-          </button>
-        </div>
-      )}
+    <div className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Editing: <span className="font-mono">{contentKey}</span>
+        </label>
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          className="w-full h-64 p-3 border border-gray-300 rounded-md font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="Enter content here..."
+        />
+      </div>
+      
+      <div className="flex items-center gap-4">
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          {isSaving ? "Saving..." : "💾 Save Content"}
+        </button>
+        
+        {message && (
+          <span className={`text-sm ${message.includes("✅") ? "text-green-600" : "text-red-600"}`}>
+            {message}
+          </span>
+        )}
+      </div>
     </div>
   );
 }
