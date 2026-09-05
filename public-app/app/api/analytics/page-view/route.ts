@@ -16,15 +16,22 @@ export async function POST(request: NextRequest) {
   const ua = request.headers.get("user-agent") ?? "";
   const { device_category, browser, os } = parseUserAgent(ua);
 
-  const { data: session } = await supabase.from("visitor_sessions").select("id").eq("session_token", body.sessionId).single();
-  let sessionRowId = session?.id;
+  const existing = await supabase
+    .from("visitor_sessions")
+    .select("id")
+    .eq("session_token", body.sessionId)
+    .maybeSingle();
+  const existingRow = existing.data as { id: string } | null;
+  let sessionRowId: string | undefined = existingRow?.id;
 
   if (!sessionRowId) {
-    const { data: newSession } = await supabase
+    const inserted = await supabase
       .from("visitor_sessions")
       .insert({ session_token: body.sessionId, device_category, browser, os, referrer: body.referrer ?? null })
-      .select("id").single();
-    sessionRowId = newSession?.id;
+      .select("id")
+      .maybeSingle();
+    const insertedRow = inserted.data as { id: string } | null;
+    sessionRowId = insertedRow?.id;
   } else {
     await supabase.from("visitor_sessions").update({ last_seen: new Date().toISOString() }).eq("id", sessionRowId);
   }
