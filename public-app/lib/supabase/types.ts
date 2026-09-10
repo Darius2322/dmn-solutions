@@ -26,6 +26,7 @@ export type Database = {
           role_id?: string | null;
           created_at?: string;
         };
+        Relationships: [];
       };
       admin_roles: {
         Row: {
@@ -43,6 +44,7 @@ export type Database = {
           name?: "super_admin" | "administrator" | "content_manager" | "support_manager" | "analyst";
           permissions?: Record<string, unknown>;
         };
+        Relationships: [];
       };
       services: {
         Row: {
@@ -87,6 +89,7 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
       portfolio: {
         Row: {
@@ -134,6 +137,7 @@ export type Database = {
           tags?: string[];
           created_at?: string;
         };
+        Relationships: [];
       };
       feedback: {
         Row: {
@@ -166,6 +170,7 @@ export type Database = {
           approved?: boolean;
           created_at?: string;
         };
+        Relationships: [];
       };
       service_requests: {
         Row: {
@@ -225,6 +230,7 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
       track_sessions: {
         Row: {
@@ -248,6 +254,7 @@ export type Database = {
           expires_at?: string;
           created_at?: string;
         };
+        Relationships: [];
       };
       referrals: {
         Row: {
@@ -289,6 +296,7 @@ export type Database = {
           status?: string;
           created_at?: string;
         };
+        Relationships: [];
       };
       support_submissions: {
         Row: {
@@ -321,6 +329,7 @@ export type Database = {
           status?: string;
           created_at?: string;
         };
+        Relationships: [];
       };
       site_content: {
         Row: {
@@ -341,6 +350,7 @@ export type Database = {
           updated_at?: string;
           updated_by?: string | null;
         };
+        Relationships: [];
       };
       faqs: {
         Row: {
@@ -367,6 +377,7 @@ export type Database = {
           sort_order?: number;
           active?: boolean;
         };
+        Relationships: [];
       };
       notifications: {
         Row: {
@@ -402,6 +413,7 @@ export type Database = {
           read?: boolean;
           created_at?: string;
         };
+        Relationships: [];
       };
       media_assets: {
         Row: {
@@ -434,6 +446,7 @@ export type Database = {
           usage_context?: string | null;
           created_at?: string;
         };
+        Relationships: [];
       };
       audit_log: {
         Row: {
@@ -466,6 +479,7 @@ export type Database = {
           new_state?: unknown;
           created_at?: string;
         };
+        Relationships: [];
       };
       visitor_sessions: {
         Row: {
@@ -501,6 +515,7 @@ export type Database = {
           country?: string | null;
           referrer?: string | null;
         };
+        Relationships: [];
       };
       page_views: {
         Row: {
@@ -521,6 +536,7 @@ export type Database = {
           path?: string;
           viewed_at?: string;
         };
+        Relationships: [];
       };
       contact_messages: {
         Row: {
@@ -553,6 +569,7 @@ export type Database = {
           status?: string;
           created_at?: string;
         };
+        Relationships: [];
       };
       analytics_events: {
         Row: {
@@ -576,6 +593,7 @@ export type Database = {
           metadata?: Record<string, unknown>;
           created_at?: string;
         };
+        Relationships: [];
       };
     };
     Views: Record<string, never>;
