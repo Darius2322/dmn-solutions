@@ -3,11 +3,11 @@ import { createSupabaseAdminClient } from "@/lib/supabase/server";
 export default async function AdminAnalyticsPage() {
   const supabase = createSupabaseAdminClient();
 
-  const [{ count: totalPageViews }, { data: pageViews }, { data: events }] = await Promise.all([
-    supabase.from("page_views").select("*", { count: "exact", head: true }),
-    supabase.from("page_views").select("path"),
-    supabase.from("analytics_events").select("event_type"),
-  ]);
+  const { count: totalPageViews } = await supabase
+    .from("page_views")
+    .select("*", { count: "exact", head: true });
+  const { data: pageViews } = await supabase.from("page_views").select("path");
+  const { data: events } = await supabase.from("analytics_events").select("event_type");
 
   const topPages = Object.entries(
     (pageViews ?? []).reduce<Record<string, number>>((acc, row) => {
