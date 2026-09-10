@@ -2,11 +2,19 @@ import { createSupabaseAdminClient } from "@/lib/supabase/server";
 
 export default async function AdminAuditLogPage() {
   const supabase = createSupabaseAdminClient();
-  const { data: logs } = await supabase
+  const { data: rawLogs } = await supabase
     .from("audit_log")
-    .select("id, action, resource_type, resource_id, created_at, profiles(email)")
+    .select("id, action, resource_type, resource_id, created_at, actor_id")
     .order("created_at", { ascending: false })
     .limit(200);
+
+  const actorIds = Array.from(new Set((rawLogs ?? []).map((l) => l.actor_id).filter((id): id is string => !!id)));
+  const { data: actors } = actorIds.length
+    ? await supabase.from("profiles").select("id, email").in("id", actorIds)
+    : { data: [] as { id: string; email: string }[] };
+  const emailById = new Map((actors ?? []).map((a) => [a.id, a.email]));
+
+  const logs = (rawLogs ?? []).map((l) => ({ ...l, adminEmail: l.actor_id ? emailById.get(l.actor_id) : null }));
 
   return (
     <div>
@@ -28,8 +36,7 @@ export default async function AdminAuditLogPage() {
             {(logs ?? []).map((log) => (
               <tr key={log.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-3 text-muted-foreground">{new Date(log.created_at).toLocaleString()}</td>
-                {/* @ts-expect-error joined relation shape */}
-                <td className="px-4 py-3 text-foreground">{log.profiles?.email ?? "—"}</td>
+                <td className="px-4 py-3 text-foreground">{log.adminEmail ?? "—"}</td>
                 <td className="px-4 py-3 text-foreground">{log.action}</td>
                 <td className="px-4 py-3 text-muted-foreground">{log.resource_type} {log.resource_id ? `#${String(log.resource_id).slice(0, 8)}` : ""}</td>
               </tr>

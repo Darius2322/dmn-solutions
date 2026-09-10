@@ -4,10 +4,18 @@ import { InternalNoteField } from "@/components/admin/internal-note-field";
 
 export default async function AdminRequestsPage() {
   const supabase = createSupabaseAdminClient();
-  const { data: requests } = await supabase
+  const { data: rawRequests } = await supabase
     .from("service_requests")
-    .select("id, tracking_number, customer_name, customer_email, status, created_at, internal_notes, services(title)")
+    .select("id, tracking_number, customer_name, customer_email, status, created_at, internal_notes, service_id")
     .order("created_at", { ascending: false });
+
+  const serviceIds = Array.from(new Set((rawRequests ?? []).map((r) => r.service_id).filter((id): id is string => !!id)));
+  const { data: services } = serviceIds.length
+    ? await supabase.from("services").select("id, title").in("id", serviceIds)
+    : { data: [] as { id: string; title: string }[] };
+  const titleById = new Map((services ?? []).map((s) => [s.id, s.title]));
+
+  const requests = (rawRequests ?? []).map((r) => ({ ...r, serviceTitle: r.service_id ? titleById.get(r.service_id) : null }));
 
   return (
     <div>
@@ -20,8 +28,7 @@ export default async function AdminRequestsPage() {
                 <p className="font-mono text-xs text-primary">{r.tracking_number}</p>
                 <p className="mt-0.5 text-sm font-medium text-foreground">{r.customer_name}</p>
                 <p className="text-xs text-muted-foreground">{r.customer_email}</p>
-                {/* @ts-expect-error joined relation shape */}
-                <p className="text-xs text-muted-foreground">{r.services?.title ?? "—"}</p>
+                <p className="text-xs text-muted-foreground">{r.serviceTitle ?? "—"}</p>
               </div>
               <RequestStatusSelect requestId={r.id} currentStatus={r.status} />
             </div>
