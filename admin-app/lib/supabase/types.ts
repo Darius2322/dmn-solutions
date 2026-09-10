@@ -189,7 +189,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
-          tracking_number?: string;
+          tracking_number: string;
           customer_name: string;
           customer_email: string;
           customer_phone?: string | null;
@@ -265,7 +265,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
-          reference_number?: string;
+          reference_number: string;
           referrer_name: string;
           referrer_email: string;
           referrer_phone?: string | null;
@@ -318,38 +318,6 @@ export type Database = {
           donor_email?: string | null;
           donor_phone?: string | null;
           details?: string;
-          status?: string;
-          created_at?: string;
-        };
-      };
-      contact_messages: {
-        Row: {
-          id: string;
-          name: string;
-          email: string;
-          phone: string | null;
-          subject: string | null;
-          message: string;
-          status: string;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          email: string;
-          phone?: string | null;
-          subject?: string | null;
-          message: string;
-          status?: string;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          email?: string;
-          phone?: string | null;
-          subject?: string | null;
-          message?: string;
           status?: string;
           created_at?: string;
         };
@@ -444,18 +412,16 @@ export type Database = {
           mime_type: string | null;
           alt_text: string | null;
           usage_context: string | null;
-          uploaded_by: string | null;
           created_at: string;
         };
         Insert: {
           id?: string;
           storage_path: string;
-          bucket: string;
+          bucket?: string;
           file_name: string;
           mime_type?: string | null;
           alt_text?: string | null;
           usage_context?: string | null;
-          uploaded_by?: string | null;
           created_at?: string;
         };
         Update: {
@@ -466,7 +432,6 @@ export type Database = {
           mime_type?: string | null;
           alt_text?: string | null;
           usage_context?: string | null;
-          uploaded_by?: string | null;
           created_at?: string;
         };
       };
@@ -555,6 +520,38 @@ export type Database = {
           session_id?: string;
           path?: string;
           viewed_at?: string;
+        };
+      };
+      contact_messages: {
+        Row: {
+          id: string;
+          name: string;
+          email: string;
+          phone: string | null;
+          subject: string | null;
+          message: string;
+          status: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          email: string;
+          phone?: string | null;
+          subject?: string | null;
+          message: string;
+          status?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          email?: string;
+          phone?: string | null;
+          subject?: string | null;
+          message?: string;
+          status?: string;
+          created_at?: string;
         };
       };
       analytics_events: {
