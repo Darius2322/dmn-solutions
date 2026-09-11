@@ -4,8 +4,10 @@ import { revalidatePath } from "next/cache";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { getCurrentAdmin } from "@/lib/auth/admin";
 
+export type ServiceCategory = "digital_technology" | "electrical" | "computer_training" | "isp";
+
 export async function createService(input: {
-  title: string; description: string; category: string; slug: string;
+  title: string; description: string; category: ServiceCategory; slug: string;
   icon: string; priceLabel?: string; features: string[];
 }) {
   const admin = await getCurrentAdmin();
@@ -32,7 +34,7 @@ export async function createService(input: {
 }
 
 export async function updateService(serviceId: string, input: {
-  title: string; description: string; category: string; slug: string;
+  title: string; description: string; category: ServiceCategory; slug: string;
   icon: string; priceLabel?: string; features: string[];
 }) {
   const admin = await getCurrentAdmin();

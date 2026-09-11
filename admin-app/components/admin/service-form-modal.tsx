@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Plus, Pencil, X } from "lucide-react";
-import { createService, updateService } from "@/lib/actions/admin/services";
+import { createService, updateService, type ServiceCategory } from "@/lib/actions/admin/services";
 
 type ServiceLike = {
   id: string; title: string; description: string; category: string;
@@ -40,7 +40,7 @@ export function ServiceFormModal({ service }: { service?: ServiceLike }) {
     const input = {
       title,
       description,
-      category,
+      category: category as ServiceCategory,
       slug: service?.slug ?? slugify(title),
       icon,
       priceLabel: priceLabel || undefined,
