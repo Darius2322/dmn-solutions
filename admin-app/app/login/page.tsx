@@ -34,7 +34,7 @@ export default function LoginPage() {
       .select("is_admin")
       .eq("id", data.user.id)
       .limit(1);
-    const profile = profileRows?.[0];
+    const profile = (profileRows as { is_admin: boolean }[] | null)?.[0];
 
     if (!profile?.is_admin) {
       await supabase.auth.signOut();
