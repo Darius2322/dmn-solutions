@@ -424,6 +424,7 @@ export type Database = {
           mime_type: string | null;
           alt_text: string | null;
           usage_context: string | null;
+          uploaded_by: string | null;
           created_at: string;
         };
         Insert: {
@@ -434,6 +435,7 @@ export type Database = {
           mime_type?: string | null;
           alt_text?: string | null;
           usage_context?: string | null;
+          uploaded_by?: string | null;
           created_at?: string;
         };
         Update: {
@@ -444,6 +446,7 @@ export type Database = {
           mime_type?: string | null;
           alt_text?: string | null;
           usage_context?: string | null;
+          uploaded_by?: string | null;
           created_at?: string;
         };
         Relationships: [];
