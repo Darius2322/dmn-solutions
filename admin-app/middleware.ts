@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { createServerClient } from "@supabase/ssr";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
 // This entire application IS the admin panel — there is no public content
 // here, so every route except /login requires a verified admin session.
@@ -22,9 +22,9 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get: (name) => request.cookies.get(name)?.value,
-        set: (name, value, options) => response.cookies.set(name, value, options),
-        remove: (name, options) => response.cookies.set(name, "", { ...options, maxAge: 0 }),
+        get: (name: string) => request.cookies.get(name)?.value,
+        set: (name: string, value: string, options: CookieOptions) => response.cookies.set(name, value, options),
+        remove: (name: string, options: CookieOptions) => response.cookies.set(name, "", { ...options, maxAge: 0 }),
       },
     }
   );
@@ -37,11 +37,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  const { data: profile } = await supabase
+  const { data: rawProfile } = await supabase
     .from("profiles")
     .select("is_admin")
     .eq("id", user.id)
     .single();
+  const profile = rawProfile as { is_admin: boolean } | null;
 
   if (!profile?.is_admin) {
     // Deliberately signed out, not just redirected: a non-admin authenticated
