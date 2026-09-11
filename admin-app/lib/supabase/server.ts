@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
 
 /**
@@ -8,7 +8,7 @@ import type { Database } from "./types";
  * the auth check itself (getCurrentAdmin). This is what actually proves
  * someone is an admin; nothing in this file trusts the frontend.
  */
-export function createSupabaseServerClient() {
+export function createSupabaseServerClient(): SupabaseClient<Database> {
   const cookieStore = cookies();
 
   return createServerClient<Database>(
@@ -34,7 +34,7 @@ export function createSupabaseServerClient() {
         },
       },
     }
-  );
+  ) as unknown as SupabaseClient<Database>;
 }
 
 /**
