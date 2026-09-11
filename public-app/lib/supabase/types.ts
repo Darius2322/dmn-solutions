@@ -112,7 +112,7 @@ export type Database = {
           slug: string;
           title: string;
           description: string;
-          category: string;
+          category?: string;
           technologies?: string[];
           image_url?: string | null;
           live_url?: string | null;
@@ -194,7 +194,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
-          tracking_number: string;
+          tracking_number?: string;
           customer_name: string;
           customer_email: string;
           customer_phone?: string | null;
@@ -272,7 +272,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
-          reference_number: string;
+          reference_number?: string;
           referrer_name: string;
           referrer_email: string;
           referrer_phone?: string | null;
