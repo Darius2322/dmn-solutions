@@ -1,7 +1,12 @@
 import type { MetadataRoute } from "next";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dmn-solution.vercel.app";
+function resolveSiteUrl() {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dmn-solution.vercel.app";
+  return /^https?:\/\//.test(raw) ? raw : `https://${raw}`;
+}
+
+const BASE_URL = resolveSiteUrl();
 
 const STATIC_ROUTES = ["", "/services", "/portfolio", "/about", "/support", "/track-order", "/contact", "/referral", "/donate", "/privacy", "/terms", "/refund-policy"];
 

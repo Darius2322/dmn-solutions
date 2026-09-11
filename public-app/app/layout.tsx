@@ -7,8 +7,13 @@ import { TrackPageView } from "@/components/analytics/track-page-view";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
+function resolveSiteUrl() {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dmn-solution.vercel.app";
+  return /^https?:\/\//.test(raw) ? raw : `https://${raw}`;
+}
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://dmn-solution.vercel.app"),
+  metadataBase: new URL(resolveSiteUrl()),
   title: {
     default: "DMN Solutions — Technology, Electrical & Training Services",
     template: "%s | DMN Solutions",
