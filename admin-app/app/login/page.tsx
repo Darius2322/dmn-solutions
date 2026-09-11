@@ -29,11 +29,12 @@ export default function LoginPage() {
 
     // Check admin status here too (not just middleware) so a non-admin who
     // authenticates gets an immediate, honest message instead of a bounce.
-    const { data: profile } = await supabase
+    const { data: profileRows } = await supabase
       .from("profiles")
       .select("is_admin")
       .eq("id", data.user.id)
-      .single();
+      .limit(1);
+    const profile = profileRows?.[0];
 
     if (!profile?.is_admin) {
       await supabase.auth.signOut();
