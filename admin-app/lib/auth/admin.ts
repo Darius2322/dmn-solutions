@@ -23,11 +23,12 @@ export async function getCurrentAdmin(): Promise<CurrentAdmin | null> {
 
   if (!user) return null;
 
-  const { data: profile } = await supabase
+  const { data: rawProfile } = await supabase
     .from("profiles")
     .select("full_name, is_admin")
     .eq("id", user.id)
     .single();
+  const profile = rawProfile as { full_name: string | null; is_admin: boolean } | null;
 
   if (!profile?.is_admin) return null;
 

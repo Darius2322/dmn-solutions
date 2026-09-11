@@ -7,10 +7,12 @@ const STATIC_ROUTES = ["", "/services", "/portfolio", "/about", "/support", "/tr
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createSupabaseServerClient();
-  const [{ data: services }, { data: portfolio }] = await Promise.all([
+  const [{ data: rawServices }, { data: rawPortfolio }] = await Promise.all([
     supabase.from("services").select("slug, updated_at").eq("active", true),
     supabase.from("portfolio").select("slug, created_at"),
   ]);
+  const services = rawServices as { slug: string; updated_at: string }[] | null;
+  const portfolio = rawPortfolio as { slug: string; created_at: string }[] | null;
 
   const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((path) => ({
     url: `${BASE_URL}${path}`, changeFrequency: "weekly", priority: path === "" ? 1 : 0.6,
