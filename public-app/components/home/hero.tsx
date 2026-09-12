@@ -11,9 +11,9 @@ export function Hero() {
         fill
         priority
         sizes="100vw"
-        className="object-cover opacity-35"
+        className="object-cover opacity-50"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-ink/60" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/55 to-ink/35" />
       <div className="relative mx-auto max-w-6xl px-6 py-20 sm:py-28">
         <div className="max-w-2xl">
           <h1 className="text-3xl font-semibold tracking-tight text-ink-foreground sm:text-4xl">
