@@ -29,12 +29,18 @@ function LoginForm() {
 
     // Check admin status here too (not just middleware) so a non-admin who
     // authenticates gets an immediate, honest message instead of a bounce.
-    const { data: profileRows } = await supabase
+    const { data: profileRows, error: profileError } = await supabase
       .from("profiles")
       .select("is_admin")
       .eq("id", data.user.id)
       .limit(1);
     const profile = (profileRows as { is_admin: boolean }[] | null)?.[0];
+
+    if (profileError) {
+      setStatus("error");
+      setError(`Profile lookup failed: ${profileError.message}`);
+      return;
+    }
 
     if (!profile?.is_admin) {
       await supabase.auth.signOut();
