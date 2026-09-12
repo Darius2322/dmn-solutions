@@ -48,7 +48,7 @@ export default function ReferralPage() {
         <input placeholder="Service they're interested in" value={form.serviceInterested} onChange={(e) => setForm({ ...form, serviceInterested: e.target.value })} className={inputClass} />
         <textarea placeholder="Additional information" rows={3} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className={inputClass} />
         {status === "error" && <p className="text-sm text-error">{error}</p>}
-        <button type="submit" disabled={status === "loading"} className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-60">
+        <button type="submit" disabled={status === "loading"} className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary-hover disabled:opacity-60">
           {status === "loading" && <Loader2 className="h-4 w-4 animate-spin" />}
           Submit referral
         </button>

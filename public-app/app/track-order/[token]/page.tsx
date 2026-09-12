@@ -25,7 +25,7 @@ export default async function TrackOrderStatusPage({
         </p>
         <Link
           href="/track-order"
-          className="mt-6 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          className="mt-6 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
         >
           Look up my order
         </Link>

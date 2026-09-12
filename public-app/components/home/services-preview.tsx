@@ -7,14 +7,17 @@ export async function ServicesPreview() {
 
   if (services.length === 0) {
     return (
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <p className="text-sm text-muted-foreground">Services will appear here once added.</p>
+      <section className="bg-surface-muted">
+        <div className="mx-auto max-w-6xl px-6 py-16">
+          <p className="text-sm text-muted-foreground">Services will appear here once added.</p>
+        </div>
       </section>
     );
   }
 
   return (
-    <section className="mx-auto max-w-6xl px-6 py-16">
+    <section className="bg-surface-muted">
+      <div className="mx-auto max-w-6xl px-6 py-16">
       <div className="mb-10 flex items-end justify-between">
         <h2 className="text-xl font-semibold text-foreground">Our services</h2>
         <Link href="/services" className="text-sm font-medium text-primary hover:underline">
@@ -36,6 +39,7 @@ export async function ServicesPreview() {
             </Link>
           );
         })}
+      </div>
       </div>
     </section>
   );
