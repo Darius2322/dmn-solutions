@@ -1,5 +1,6 @@
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { PortfolioFormModal } from "@/components/admin/portfolio-form-modal";
+import { PortfolioImportButtons } from "@/components/admin/portfolio-import-buttons";
 import { ConfirmDeleteProject } from "@/components/admin/confirm-delete-project";
 import { FeaturedToggle } from "@/components/admin/featured-toggle";
 
@@ -11,7 +12,10 @@ export default async function AdminPortfolioPage() {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-xl font-semibold text-foreground">Portfolio</h1>
-        <PortfolioFormModal />
+        <div className="flex flex-wrap items-center gap-2">
+          <PortfolioImportButtons />
+          <PortfolioFormModal />
+        </div>
       </div>
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {(projects ?? []).map((p) => (

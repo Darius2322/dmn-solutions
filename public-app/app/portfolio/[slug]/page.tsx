@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { ExternalLink } from "lucide-react";
 import { getPortfolioBySlug } from "@/lib/actions/portfolio";
+import { PortfolioPreview } from "@/components/portfolio-preview";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const project = await getPortfolioBySlug(params.slug);
@@ -18,23 +19,7 @@ export default async function PortfolioDetailPage({ params }: { params: { slug: 
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
       {project.live_url ? (
-        <div className="mb-8 overflow-hidden rounded-lg border border-border bg-surface">
-          <div className="flex items-center gap-1.5 border-b border-border bg-surface-muted px-3 py-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-border" />
-            <span className="h-2.5 w-2.5 rounded-full bg-border" />
-            <span className="h-2.5 w-2.5 rounded-full bg-border" />
-            <span className="ml-2 truncate text-xs text-muted-foreground">{project.live_url}</span>
-          </div>
-          <iframe
-            src={project.live_url}
-            title={project.title}
-            loading="lazy"
-            className="h-64 w-full bg-surface sm:h-96"
-          />
-          <p className="border-t border-border bg-surface-muted px-3 py-1.5 text-[11px] text-muted-foreground">
-            Preview not loading? Some sites block embedding — use "Visit live project" below instead.
-          </p>
-        </div>
+        <PortfolioPreview liveUrl={project.live_url} title={project.title} />
       ) : (
         project.image_url && (
           <div className="relative mb-8 h-64 w-full overflow-hidden rounded-lg bg-surface sm:h-80">
