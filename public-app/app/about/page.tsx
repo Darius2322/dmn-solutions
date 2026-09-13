@@ -17,7 +17,7 @@ export default async function AboutPage() {
         <p className="mt-2 text-base text-foreground">{mission as string}</p>
       </div>
 
-      <div className="mt-10 grid gap-6 sm:grid-cols-2">
+      <div className="mt-10 grid gap-6 grid-cols-2">
         <div className="rounded-lg border border-border bg-surface p-5">
           <h3 className="text-sm font-medium text-foreground">Areas of expertise</h3>
           <ul className="mt-2 space-y-1 text-sm text-muted-foreground">

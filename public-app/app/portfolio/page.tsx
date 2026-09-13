@@ -16,7 +16,7 @@ export default async function PortfolioPage() {
       {projects.length === 0 ? (
         <p className="mt-12 text-sm text-muted-foreground">No projects published yet.</p>
       ) : (
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-6 grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => (
             <Link
               key={project.id}

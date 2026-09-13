@@ -26,7 +26,7 @@ export async function ServicesPreview() {
           View all
         </Link>
       </div>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 grid-cols-2 lg:grid-cols-4">
         {services.slice(0, 4).map((service) => {
           const Icon = (Icons as any)[toPascalCase(service.icon)] ?? Icons.Wrench;
           return (

@@ -12,7 +12,7 @@ export default function SupportPage() {
         DMN Solutions relies on community support to extend training and equipment access.
       </p>
 
-      <div className="mt-10 grid gap-6 sm:grid-cols-2">
+      <div className="mt-10 grid gap-6 grid-cols-2">
         <div className="rounded-lg border border-border bg-surface p-6">
           <Laptop className="h-6 w-6 text-primary" aria-hidden />
           <h2 className="mt-3 text-base font-medium text-foreground">Donate Equipment</h2>

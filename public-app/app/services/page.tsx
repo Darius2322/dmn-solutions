@@ -40,7 +40,7 @@ export default async function ServicesPage() {
           <h2 className="mb-5 text-sm font-medium uppercase tracking-wide text-muted-foreground">
             {CATEGORY_LABELS[category] ?? category}
           </h2>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 grid-cols-2 lg:grid-cols-3">
             {items.map((service) => {
               const Icon = (Icons as any)[toPascalCase(service.icon)] ?? Icons.Wrench;
               return (
