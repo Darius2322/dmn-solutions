@@ -1,12 +1,16 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export function Footer() {
   return (
     <footer className="border-t border-white/10 bg-ink">
       <div className="mx-auto max-w-6xl px-6 py-12">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-10 grid-cols-2 lg:grid-cols-4">
           <div>
-            <p className="text-base font-semibold text-ink-foreground">DMN Solutions</p>
+            <div className="flex items-center gap-2">
+              <Image src="/images/logo-icon.png" alt="" width={24} height={24} className="h-6 w-6" />
+              <p className="text-base font-semibold text-ink-foreground">DMN Solutions</p>
+            </div>
             <p className="mt-3 text-sm text-ink-muted-foreground">
               Practical digital, technology, electrical, computer training and internet services.
             </p>

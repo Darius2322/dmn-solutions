@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Menu,
   X,
@@ -42,8 +43,9 @@ export function Navbar() {
         <Link
           href="/"
           onClick={() => setOpen(false)}
-          className="text-lg font-semibold tracking-tight text-foreground"
+          className="flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground"
         >
+          <Image src="/images/logo-icon.png" alt="" width={28} height={28} className="h-7 w-7" priority />
           DMN Solutions
         </Link>
 
