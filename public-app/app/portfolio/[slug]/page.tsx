@@ -31,6 +31,9 @@ export default async function PortfolioDetailPage({ params }: { params: { slug: 
             loading="lazy"
             className="h-64 w-full bg-surface sm:h-96"
           />
+          <p className="border-t border-border bg-surface-muted px-3 py-1.5 text-[11px] text-muted-foreground">
+            Preview not loading? Some sites block embedding — use "Visit live project" below instead.
+          </p>
         </div>
       ) : (
         project.image_url && (
