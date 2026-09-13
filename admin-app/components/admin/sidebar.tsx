@@ -24,6 +24,8 @@ import {
   LogOut,
 } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { ThemeToggle } from "./theme-toggle";
+import { GlobalSearch } from "./global-search";
 
 const NAV = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -94,11 +96,21 @@ export function AdminSidebar() {
   return (
     <>
       {/* Mobile top bar */}
-      <div className="flex items-center justify-between border-b border-border bg-surface px-4 py-3 lg:hidden">
-        <span className="text-sm font-semibold text-foreground">DMN Solutions Admin</span>
-        <button onClick={() => setOpen(true)} aria-label="Open menu" className="rounded-md p-2 hover:bg-background">
-          <Menu className="h-5 w-5" />
-        </button>
+      <div className="flex items-center justify-between gap-3 border-b border-border bg-surface px-4 py-3 lg:hidden">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setOpen(true)}
+            aria-label="Open menu"
+            className="rounded-md border border-border p-2 hover:bg-background"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+          <span className="text-sm font-semibold text-foreground">DMN Solutions Admin</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <GlobalSearch />
+          <ThemeToggle />
+        </div>
       </div>
 
       {/* Mobile drawer */}
@@ -121,10 +133,16 @@ export function AdminSidebar() {
       )}
 
       {/* Desktop sidebar */}
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-surface lg:flex">
+      <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-surface lg:sticky lg:top-0 lg:flex lg:h-screen">
         <div className="border-b border-border px-4 py-4">
-          <span className="text-sm font-semibold text-foreground">DMN Solutions</span>
-          <p className="text-xs text-muted-foreground">Admin</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-sm font-semibold text-foreground">DMN Solutions</span>
+              <p className="text-xs text-muted-foreground">Admin</p>
+            </div>
+            <ThemeToggle />
+          </div>
+          <GlobalSearch className="mt-3 w-full justify-start" />
         </div>
         <NavLinks />
         <div className="border-t border-border px-3 py-3">
