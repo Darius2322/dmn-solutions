@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { ImageIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { getPortfolioProjects } from "@/lib/actions/portfolio";
 
@@ -23,9 +24,13 @@ export default async function PortfolioPage() {
               href={`/portfolio/${project.slug}`}
               className="overflow-hidden rounded-lg border border-border bg-surface transition-colors hover:border-primary/40"
             >
-              {project.image_url && (
+              {project.image_url ? (
                 <div className="relative h-40 w-full bg-background">
                   <Image src={project.image_url} alt={project.title} fill className="object-cover" />
+                </div>
+              ) : (
+                <div className="flex h-40 w-full items-center justify-center bg-surface-muted">
+                  <ImageIcon className="h-6 w-6 text-muted-foreground" aria-hidden />
                 </div>
               )}
               <div className="p-4">
