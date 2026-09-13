@@ -9,6 +9,7 @@ import {
   Home,
   Wrench,
   Image as ImageIcon,
+  Star,
   Info,
   LifeBuoy,
   Mail,
@@ -19,6 +20,7 @@ const NAV_LINKS = [
   { href: "/", label: "Home", icon: Home },
   { href: "/services", label: "Services", icon: Wrench },
   { href: "/portfolio", label: "Portfolio", icon: ImageIcon },
+  { href: "/reviews", label: "Reviews", icon: Star },
   { href: "/about", label: "About", icon: Info },
   { href: "/support", label: "Support", icon: LifeBuoy },
   { href: "/contact", label: "Contact", icon: Mail },
@@ -45,7 +47,7 @@ export function Navbar() {
           DMN Solutions
         </Link>
 
-        <div className="hidden items-center gap-8 md:flex">
+        <div className="hidden items-center gap-6 lg:flex">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
@@ -57,7 +59,7 @@ export function Navbar() {
           ))}
         </div>
 
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="hidden items-center gap-3 lg:flex">
           <ThemeToggle />
           <Link
             href="/track-order"
@@ -68,7 +70,7 @@ export function Navbar() {
           </Link>
         </div>
 
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-2 lg:hidden">
           <ThemeToggle />
           <button
             type="button"
@@ -82,7 +84,7 @@ export function Navbar() {
       </nav>
 
       {open && (
-        <div className="max-h-[75vh] overflow-y-auto border-t border-border bg-ink px-6 py-6 md:hidden">
+        <div className="max-h-[75vh] overflow-y-auto border-t border-border bg-ink px-6 py-6 lg:hidden">
           <div className="grid grid-cols-2 gap-3">
             {NAV_LINKS.map((link) => {
               const Icon = link.icon;
