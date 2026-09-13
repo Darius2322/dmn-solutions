@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { ExternalLink } from "lucide-react";
 import { getPortfolioBySlug } from "@/lib/actions/portfolio";
@@ -16,10 +17,27 @@ export default async function PortfolioDetailPage({ params }: { params: { slug: 
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
-      {project.image_url && (
-        <div className="relative mb-8 h-64 w-full overflow-hidden rounded-lg bg-surface sm:h-80">
-          <Image src={project.image_url} alt={project.title} fill className="object-cover" />
+      {project.live_url ? (
+        <div className="mb-8 overflow-hidden rounded-lg border border-border bg-surface">
+          <div className="flex items-center gap-1.5 border-b border-border bg-surface-muted px-3 py-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-border" />
+            <span className="h-2.5 w-2.5 rounded-full bg-border" />
+            <span className="h-2.5 w-2.5 rounded-full bg-border" />
+            <span className="ml-2 truncate text-xs text-muted-foreground">{project.live_url}</span>
+          </div>
+          <iframe
+            src={project.live_url}
+            title={project.title}
+            loading="lazy"
+            className="h-64 w-full bg-surface sm:h-96"
+          />
         </div>
+      ) : (
+        project.image_url && (
+          <div className="relative mb-8 h-64 w-full overflow-hidden rounded-lg bg-surface sm:h-80">
+            <Image src={project.image_url} alt={project.title} fill className="object-cover" />
+          </div>
+        )
       )}
 
       <p className="text-xs uppercase tracking-wide text-muted-foreground">{project.category}</p>
@@ -38,17 +56,25 @@ export default async function PortfolioDetailPage({ params }: { params: { slug: 
         </div>
       )}
 
-      {project.live_url && (
-        <a
-          href={project.live_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-8 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+      <div className="mt-8 flex flex-wrap gap-3">
+        {project.live_url && (
+          <a
+            href={project.live_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-primary/40"
+          >
+            Visit live project
+            <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+          </a>
+        )}
+        <Link
+          href="/contact"
+          className="inline-flex items-center gap-1.5 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
         >
-          Visit live project
-          <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-        </a>
-      )}
+          Request something similar
+        </Link>
+      </div>
     </main>
   );
 }

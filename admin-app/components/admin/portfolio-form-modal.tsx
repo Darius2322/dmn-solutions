@@ -82,10 +82,13 @@ export function PortfolioFormModal({ project }: { project?: ProjectLike }) {
               <div className="grid grid-cols-2 gap-3">
                 <select value={category} onChange={(e) => setCategory(e.target.value)}
                   className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm">
-                  <option value="business">Business</option>
+                  <option value="business">Business Website</option>
                   <option value="saas">SaaS</option>
                   <option value="ecommerce">E-commerce</option>
                   <option value="fashion">Fashion</option>
+                  <option value="electrical">Electrical Installation</option>
+                  <option value="computer_training">Computer Training</option>
+                  <option value="isp">Internet / ISP</option>
                 </select>
                 <input placeholder="Client name" value={clientName} onChange={(e) => setClientName(e.target.value)}
                   className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
