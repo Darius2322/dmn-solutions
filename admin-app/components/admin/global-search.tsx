@@ -14,6 +14,7 @@ const PAGES = [
   { href: "/messages", label: "Messages" },
   { href: "/referrals", label: "Referrals" },
   { href: "/support", label: "Support" },
+  { href: "/partners", label: "Partners" },
   { href: "/visitors", label: "Visitors" },
   { href: "/analytics", label: "Analytics" },
   { href: "/media", label: "Media" },

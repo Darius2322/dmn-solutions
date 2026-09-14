@@ -4,6 +4,13 @@ import { updateSupportStatus } from "@/lib/actions/admin/moderation";
 
 const SUPPORT_STATUSES = ["pending", "acknowledged", "received"];
 
+const TYPE_LABELS: Record<string, string> = {
+  equipment_donation: "Equipment donation",
+  financial_support: "Financial support",
+  work_with_us: "Work with us",
+  bug_report: "Bug report",
+};
+
 export default async function AdminSupportPage() {
   const supabase = createSupabaseAdminClient();
   const { data: submissions } = await supabase
@@ -20,7 +27,7 @@ export default async function AdminSupportPage() {
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div>
                 <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
-                  {s.type === "equipment_donation" ? "Equipment donation" : "Financial support"}
+                  {TYPE_LABELS[s.type] ?? s.type}
                 </span>
                 <p className="mt-1 text-sm font-medium text-foreground">{s.donor_name ?? "Anonymous"}</p>
                 <p className="text-xs text-muted-foreground">{s.donor_email} {s.donor_phone ? `· ${s.donor_phone}` : ""}</p>
