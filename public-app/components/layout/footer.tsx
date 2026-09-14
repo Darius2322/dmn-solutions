@@ -32,6 +32,8 @@ export function Footer() {
               <li><Link href="/donate" className="hover:text-ink-foreground">Donate</Link></li>
               <li><Link href="/referral" className="hover:text-ink-foreground">Referral Program</Link></li>
               <li><Link href="/support" className="hover:text-ink-foreground">Support Us</Link></li>
+              <li><Link href="/work-with-us" className="hover:text-ink-foreground">Work With Us</Link></li>
+              <li><Link href="/report-bug" className="hover:text-ink-foreground">Report a Bug</Link></li>
             </ul>
           </div>
 

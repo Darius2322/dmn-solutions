@@ -106,6 +106,8 @@ export type Database = {
           client_name: string | null;
           tags: string[];
           created_at: string;
+          active: boolean;
+          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -121,6 +123,8 @@ export type Database = {
           client_name?: string | null;
           tags?: string[];
           created_at?: string;
+          active?: boolean;
+          updated_at?: string;
         };
         Update: {
           id?: string;
@@ -136,6 +140,41 @@ export type Database = {
           client_name?: string | null;
           tags?: string[];
           created_at?: string;
+          active?: boolean;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      partners: {
+        Row: {
+          id: string;
+          name: string;
+          logo_url: string | null;
+          website_url: string | null;
+          sort_order: number;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          logo_url?: string | null;
+          website_url?: string | null;
+          sort_order?: number;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          logo_url?: string | null;
+          website_url?: string | null;
+          sort_order?: number;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
