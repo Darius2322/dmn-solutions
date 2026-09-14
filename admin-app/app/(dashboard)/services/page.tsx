@@ -2,6 +2,14 @@ import { createSupabaseAdminClient } from "@/lib/supabase/server";
 import { ServiceStatusToggle } from "@/components/admin/service-status-toggle";
 import { ServiceFormModal } from "@/components/admin/service-form-modal";
 import { DeleteServiceButton } from "@/components/admin/delete-service-button";
+import { DetailsModal } from "@/components/admin/details-modal";
+
+function formatDate(iso: string | null) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleString(undefined, {
+    year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
+  });
+}
 
 export default async function AdminServicesPage() {
   const supabase = createSupabaseAdminClient();
@@ -31,6 +39,16 @@ export default async function AdminServicesPage() {
             <div className="mt-3 flex flex-wrap gap-2">
               <ServiceFormModal service={service} />
               <ServiceStatusToggle serviceId={service.id} active={service.active} />
+              <DetailsModal
+                title={service.title}
+                rows={[
+                  { label: "Added", value: formatDate(service.created_at) },
+                  { label: "Last edited", value: formatDate(service.updated_at) },
+                  { label: "Status", value: service.active ? "Active" : "Inactive" },
+                  { label: "Slug", value: service.slug },
+                  { label: "Sort order", value: String(service.sort_order ?? "—") },
+                ]}
+              />
               <DeleteServiceButton serviceId={service.id} />
             </div>
           </div>
@@ -62,6 +80,16 @@ export default async function AdminServicesPage() {
                   <div className="flex justify-end gap-2">
                     <ServiceFormModal service={service} />
                     <ServiceStatusToggle serviceId={service.id} active={service.active} />
+                    <DetailsModal
+                      title={service.title}
+                      rows={[
+                        { label: "Added", value: formatDate(service.created_at) },
+                        { label: "Last edited", value: formatDate(service.updated_at) },
+                        { label: "Status", value: service.active ? "Active" : "Inactive" },
+                        { label: "Slug", value: service.slug },
+                        { label: "Sort order", value: String(service.sort_order ?? "—") },
+                      ]}
+                    />
                     <DeleteServiceButton serviceId={service.id} />
                   </div>
                 </td>

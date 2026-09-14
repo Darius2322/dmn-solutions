@@ -47,7 +47,7 @@ export async function updateProject(projectId: string, input: ProjectInput) {
       category: input.category, technologies: input.technologies,
       image_url: input.imageUrl ?? null, live_url: input.liveUrl ?? null,
       client_name: input.clientName ?? null, completion_date: input.completionDate ?? null,
-      tags: input.tags, featured: input.featured,
+      tags: input.tags, featured: input.featured, updated_at: new Date().toISOString(),
     })
     .eq("id", projectId);
 
@@ -56,6 +56,24 @@ export async function updateProject(projectId: string, input: ProjectInput) {
     actor_id: admin.id, action: "portfolio.updated", resource_type: "portfolio",
     resource_id: projectId, previous_state: before, new_state: input,
   });
+  revalidatePath("/portfolio");
+  return { success: true as const };
+}
+
+export async function updateProjectStatus(projectId: string, active: boolean) {
+  const admin = await getCurrentAdmin();
+  if (!admin) return { success: false as const, error: "Not authorized" };
+
+  const supabase = createSupabaseAdminClient();
+  const { data: before } = await supabase.from("portfolio").select("active").eq("id", projectId).single();
+  const { error } = await supabase.from("portfolio").update({ active }).eq("id", projectId);
+  if (error) return { success: false as const, error: "Could not update project" };
+
+  await supabase.from("audit_log").insert({
+    actor_id: admin.id, action: active ? "portfolio.activated" : "portfolio.deactivated",
+    resource_type: "portfolio", resource_id: projectId, previous_state: before, new_state: { active },
+  });
+
   revalidatePath("/portfolio");
   return { success: true as const };
 }
