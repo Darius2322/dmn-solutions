@@ -340,7 +340,7 @@ export type Database = {
       support_submissions: {
         Row: {
           id: string;
-          type: "equipment_donation" | "financial_support";
+          type: "equipment_donation" | "financial_support" | "work_with_us" | "bug_report";
           donor_name: string | null;
           donor_email: string | null;
           donor_phone: string | null;
@@ -350,7 +350,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
-          type: "equipment_donation" | "financial_support";
+          type: "equipment_donation" | "financial_support" | "work_with_us" | "bug_report";
           donor_name?: string | null;
           donor_email?: string | null;
           donor_phone?: string | null;
@@ -360,7 +360,7 @@ export type Database = {
         };
         Update: {
           id?: string;
-          type?: "equipment_donation" | "financial_support";
+          type?: "equipment_donation" | "financial_support" | "work_with_us" | "bug_report";
           donor_name?: string | null;
           donor_email?: string | null;
           donor_phone?: string | null;
