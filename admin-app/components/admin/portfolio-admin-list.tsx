@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import Image from "next/image";
+import { Search, ImageIcon } from "lucide-react";
 import { PortfolioFormModal } from "@/components/admin/portfolio-form-modal";
 import { PortfolioStatusToggle } from "@/components/admin/portfolio-status-toggle";
 import { FeaturedToggle } from "@/components/admin/featured-toggle";
@@ -18,7 +19,7 @@ function formatDate(iso: string | null) {
 type Project = {
   id: string; title: string; slug: string; description: string; category: string;
   active: boolean; featured: boolean; created_at: string; updated_at: string | null;
-  client_name: string | null; live_url: string | null;
+  client_name: string | null; live_url: string | null; image_url: string | null;
 };
 
 export function PortfolioAdminList({ projects }: { projects: Project[] }) {
@@ -82,7 +83,30 @@ export function PortfolioAdminList({ projects }: { projects: Project[] }) {
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {filtered.map((p) => (
-          <div key={p.id} className="rounded-lg border border-border bg-surface p-4">
+          <div key={p.id} className="overflow-hidden rounded-lg border border-border bg-surface">
+            {p.live_url ? (
+              <div className="relative h-28 w-full overflow-hidden bg-background">
+                <iframe
+                  src={p.live_url}
+                  title={p.title}
+                  loading="lazy"
+                  scrolling="no"
+                  tabIndex={-1}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-0 top-0 origin-top-left border-0"
+                  style={{ width: "400%", height: "400%", transform: "scale(0.25)" }}
+                />
+              </div>
+            ) : p.image_url ? (
+              <div className="relative h-28 w-full bg-background">
+                <Image src={p.image_url} alt={p.title} fill className="object-cover" />
+              </div>
+            ) : (
+              <div className="flex h-28 w-full items-center justify-center bg-surface-muted">
+                <ImageIcon className="h-5 w-5 text-muted-foreground" aria-hidden />
+              </div>
+            )}
+            <div className="p-4">
             <div className="flex items-start justify-between gap-2">
               <p className="text-sm font-medium text-foreground">{p.title}</p>
               <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs ${p.active ? "bg-success/10 text-success" : "bg-muted-foreground/10 text-muted-foreground"}`}>
@@ -108,6 +132,7 @@ export function PortfolioAdminList({ projects }: { projects: Project[] }) {
                 ]}
               />
               <ConfirmDeleteProject projectId={p.id} />
+            </div>
             </div>
           </div>
         ))}
