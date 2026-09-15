@@ -421,10 +421,10 @@ export type Database = {
       notifications: {
         Row: {
           id: string;
-          recipient_type: "admin" | "customer";
+          recipient_type: string;
           recipient_id: string | null;
           service_request_id: string | null;
-          type: "success" | "warning" | "error" | "info";
+          type: string;
           title: string;
           message: string | null;
           read: boolean;
@@ -432,10 +432,10 @@ export type Database = {
         };
         Insert: {
           id?: string;
-          recipient_type: "admin" | "customer";
+          recipient_type: string;
           recipient_id?: string | null;
           service_request_id?: string | null;
-          type: "success" | "warning" | "error" | "info";
+          type: string;
           title: string;
           message?: string | null;
           read?: boolean;
@@ -443,10 +443,10 @@ export type Database = {
         };
         Update: {
           id?: string;
-          recipient_type?: "admin" | "customer";
+          recipient_type?: string;
           recipient_id?: string | null;
           service_request_id?: string | null;
-          type?: "success" | "warning" | "error" | "info";
+          type?: string;
           title?: string;
           message?: string | null;
           read?: boolean;

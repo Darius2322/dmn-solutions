@@ -27,6 +27,7 @@ import {
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { ThemeToggle } from "./theme-toggle";
 import { GlobalSearch } from "./global-search";
+import { NotificationBell } from "./notification-bell";
 
 const NAV = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -111,6 +112,7 @@ export function AdminSidebar() {
         </div>
         <div className="flex items-center gap-2">
           <GlobalSearch />
+          <NotificationBell />
           <ThemeToggle />
         </div>
       </div>
@@ -142,7 +144,10 @@ export function AdminSidebar() {
               <span className="text-sm font-semibold text-foreground">DMN Solutions</span>
               <p className="text-xs text-muted-foreground">Admin</p>
             </div>
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <NotificationBell />
+              <ThemeToggle />
+            </div>
           </div>
           <GlobalSearch className="mt-3 w-full justify-start" />
         </div>

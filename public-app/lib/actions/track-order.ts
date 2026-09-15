@@ -34,12 +34,20 @@ export async function submitServiceRequest(input: ServiceRequestInput) {
       budget_range: parsed.data.budgetRange || null,
       preferred_contact: parsed.data.preferredContact,
     })
-    .select("tracking_number")
+    .select("id, tracking_number")
     .single();
 
   if (error || !data) return { success: false as const, error: "Could not submit your request. Please try again." };
 
   await supabase.from("analytics_events").insert({ event_type: "request_submitted", metadata: { service_id: parsed.data.serviceId } });
+
+  await supabase.from("notifications").insert({
+    recipient_type: "admin",
+    type: "service_request",
+    title: `New service request from ${parsed.data.customerName}`,
+    message: parsed.data.description,
+    service_request_id: data.id,
+  });
 
   return { success: true as const, trackingNumber: data.tracking_number as string };
 }
@@ -123,6 +131,14 @@ export async function submitSupportSubmission(input: SupportSubmissionInput) {
   });
 
   if (error) return { success: false as const, error: "Could not submit. Please try again." };
+
+  await supabase.from("notifications").insert({
+    recipient_type: "admin",
+    type: "support_submission",
+    title: `New ${parsed.data.type.replace(/_/g, " ")} from ${parsed.data.donorName || "Anonymous"}`,
+    message: parsed.data.details,
+  });
+
   return { success: true as const };
 }
 
@@ -138,5 +154,13 @@ export async function submitContactMessage(input: ContactInput) {
   });
 
   if (error) return { success: false as const, error: "Could not send your message. Please try again." };
+
+  await supabase.from("notifications").insert({
+    recipient_type: "admin",
+    type: "contact_message",
+    title: `New message from ${parsed.data.name}`,
+    message: parsed.data.message,
+  });
+
   return { success: true as const };
 }
