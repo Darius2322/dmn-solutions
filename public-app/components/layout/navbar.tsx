@@ -16,6 +16,7 @@ import {
   Mail,
 } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
+import { SiteSearch } from "./site-search";
 
 const NAV_LINKS = [
   { href: "/", label: "Home", icon: Home },
@@ -62,6 +63,7 @@ export function Navbar() {
         </div>
 
         <div className="hidden items-center gap-3 lg:flex">
+          <SiteSearch />
           <ThemeToggle />
           <Link
             href="/track-order"
@@ -73,6 +75,7 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
+          <SiteSearch />
           <ThemeToggle />
           <button
             type="button"
