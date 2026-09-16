@@ -1,13 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Search, ImageIcon } from "lucide-react";
+import { Search, ImageIcon, MoreVertical, Trash2, EyeOff, Eye, X } from "lucide-react";
 import { PortfolioFormModal } from "@/components/admin/portfolio-form-modal";
 import { PortfolioStatusToggle } from "@/components/admin/portfolio-status-toggle";
 import { FeaturedToggle } from "@/components/admin/featured-toggle";
 import { ConfirmDeleteProject } from "@/components/admin/confirm-delete-project";
 import { DetailsModal } from "@/components/admin/details-modal";
+import { deleteProject, updateProjectStatus } from "@/lib/actions/admin/portfolio";
 
 function formatDate(iso: string | null) {
   if (!iso) return "—";
@@ -23,10 +25,14 @@ type Project = {
 };
 
 export function PortfolioAdminList({ projects }: { projects: Project[] }) {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
   const [status, setStatus] = useState<"all" | "visible" | "hidden">("all");
   const [sort, setSort] = useState<"newest" | "oldest" | "featured">("newest");
+  const [selectMode, setSelectMode] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [isPending, startTransition] = useTransition();
 
   const categories = useMemo(
     () => ["all", ...Array.from(new Set(projects.map((p) => p.category)))],
@@ -50,6 +56,37 @@ export function PortfolioAdminList({ projects }: { projects: Project[] }) {
 
     return list;
   }, [projects, query, category, status, sort]);
+
+  function toggleSelectMode() {
+    setSelectMode((v) => !v);
+    setSelected(new Set());
+  }
+
+  function toggleItem(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function runBulk(action: "hide" | "show" | "delete") {
+    const ids = Array.from(selected);
+    if (ids.length === 0) return;
+    if (action === "delete" && !window.confirm(`Delete ${ids.length} project(s)? This cannot be undone.`)) return;
+
+    startTransition(async () => {
+      if (action === "delete") {
+        await Promise.all(ids.map((id) => deleteProject(id)));
+      } else {
+        await Promise.all(ids.map((id) => updateProjectStatus(id, action === "show")));
+      }
+      setSelected(new Set());
+      setSelectMode(false);
+      router.refresh();
+    });
+  }
 
   return (
     <div>
@@ -79,11 +116,50 @@ export function PortfolioAdminList({ projects }: { projects: Project[] }) {
           <option value="oldest">Oldest first</option>
           <option value="featured">Featured first</option>
         </select>
+        <button
+          type="button"
+          onClick={toggleSelectMode}
+          aria-label="Toggle selection mode"
+          className={`rounded-md border p-2 ${selectMode ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-background"}`}
+        >
+          <MoreVertical className="h-4 w-4" />
+        </button>
       </div>
+
+      {selectMode && (
+        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md border border-border bg-surface-muted px-3 py-2">
+          <span className="text-xs font-medium text-foreground">{selected.size} selected</span>
+          <button disabled={selected.size === 0 || isPending} onClick={() => runBulk("hide")}
+            className="flex items-center gap-1 rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-foreground hover:bg-background disabled:opacity-50">
+            <EyeOff className="h-3.5 w-3.5" /> Hide
+          </button>
+          <button disabled={selected.size === 0 || isPending} onClick={() => runBulk("show")}
+            className="flex items-center gap-1 rounded-md border border-border bg-surface px-3 py-1.5 text-xs text-foreground hover:bg-background disabled:opacity-50">
+            <Eye className="h-3.5 w-3.5" /> Show
+          </button>
+          <button disabled={selected.size === 0 || isPending} onClick={() => runBulk("delete")}
+            className="flex items-center gap-1 rounded-md border border-error/30 bg-surface px-3 py-1.5 text-xs text-error hover:bg-error/5 disabled:opacity-50">
+            <Trash2 className="h-3.5 w-3.5" /> Delete
+          </button>
+          <button onClick={toggleSelectMode} className="ml-auto flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
+            <X className="h-3.5 w-3.5" /> Cancel
+          </button>
+        </div>
+      )}
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {filtered.map((p) => (
-          <div key={p.id} className="overflow-hidden rounded-lg border border-border bg-surface">
+          <div key={p.id} className="relative overflow-hidden rounded-lg border border-border bg-surface">
+            {selectMode && (
+              <label className="absolute left-2 top-2 z-10 flex h-5 w-5 items-center justify-center rounded border border-border bg-surface">
+                <input
+                  type="checkbox"
+                  checked={selected.has(p.id)}
+                  onChange={() => toggleItem(p.id)}
+                  className="h-4 w-4 accent-primary"
+                />
+              </label>
+            )}
             {p.image_url ? (
               <div className="relative h-28 w-full bg-background">
                 <Image src={p.image_url} alt={p.title} fill className="object-cover" />
