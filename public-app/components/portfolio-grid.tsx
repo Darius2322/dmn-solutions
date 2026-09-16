@@ -72,20 +72,7 @@ export function PortfolioGrid({ projects }: { projects: Project[] }) {
                 href={`/portfolio/${project.slug}`}
                 className="overflow-hidden rounded-lg border border-border bg-surface transition-colors hover:border-primary/40"
               >
-                {project.live_url ? (
-                  <div className="relative h-40 w-full overflow-hidden bg-background">
-                    <iframe
-                      src={project.live_url}
-                      title={project.title}
-                      loading="lazy"
-                      scrolling="no"
-                      tabIndex={-1}
-                      aria-hidden="true"
-                      className="pointer-events-none absolute left-0 top-0 origin-top-left border-0"
-                      style={{ width: "400%", height: "400%", transform: "scale(0.25)" }}
-                    />
-                  </div>
-                ) : project.image_url ? (
+                {project.image_url ? (
                   <div className="relative h-40 w-full bg-background">
                     <Image src={project.image_url} alt={project.title} fill className="object-cover" />
                   </div>

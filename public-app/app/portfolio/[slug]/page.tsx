@@ -2,9 +2,8 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, ImageIcon } from "lucide-react";
 import { getPortfolioBySlug } from "@/lib/actions/portfolio";
-import { PortfolioPreview } from "@/components/portfolio-preview";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const project = await getPortfolioBySlug(params.slug);
@@ -18,14 +17,14 @@ export default async function PortfolioDetailPage({ params }: { params: { slug: 
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
-      {project.live_url ? (
-        <PortfolioPreview liveUrl={project.live_url} title={project.title} />
+      {project.image_url ? (
+        <div className="relative mb-8 h-64 w-full overflow-hidden rounded-lg bg-surface sm:h-80">
+          <Image src={project.image_url} alt={project.title} fill className="object-cover" />
+        </div>
       ) : (
-        project.image_url && (
-          <div className="relative mb-8 h-64 w-full overflow-hidden rounded-lg bg-surface sm:h-80">
-            <Image src={project.image_url} alt={project.title} fill className="object-cover" />
-          </div>
-        )
+        <div className="mb-8 flex h-40 w-full items-center justify-center rounded-lg bg-surface-muted">
+          <ImageIcon className="h-6 w-6 text-muted-foreground" aria-hidden />
+        </div>
       )}
 
       <p className="text-xs uppercase tracking-wide text-muted-foreground">{project.category}</p>
@@ -57,7 +56,7 @@ export default async function PortfolioDetailPage({ params }: { params: { slug: 
           </a>
         )}
         <Link
-          href="/contact"
+          href={`/request-service?similar=${encodeURIComponent(project.title)}`}
           className="inline-flex items-center gap-1.5 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
         >
           Request something similar

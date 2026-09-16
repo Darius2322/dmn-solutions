@@ -84,20 +84,7 @@ export function PortfolioAdminList({ projects }: { projects: Project[] }) {
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {filtered.map((p) => (
           <div key={p.id} className="overflow-hidden rounded-lg border border-border bg-surface">
-            {p.live_url ? (
-              <div className="relative h-28 w-full overflow-hidden bg-background">
-                <iframe
-                  src={p.live_url}
-                  title={p.title}
-                  loading="lazy"
-                  scrolling="no"
-                  tabIndex={-1}
-                  aria-hidden="true"
-                  className="pointer-events-none absolute left-0 top-0 origin-top-left border-0"
-                  style={{ width: "400%", height: "400%", transform: "scale(0.25)" }}
-                />
-              </div>
-            ) : p.image_url ? (
+            {p.image_url ? (
               <div className="relative h-28 w-full bg-background">
                 <Image src={p.image_url} alt={p.title} fill className="object-cover" />
               </div>

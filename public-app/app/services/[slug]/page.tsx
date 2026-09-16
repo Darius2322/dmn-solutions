@@ -3,7 +3,7 @@ import * as Icons from "lucide-react";
 import type { Metadata } from "next";
 import { CheckCircle2 } from "lucide-react";
 import { getServiceBySlug } from "@/lib/actions/services";
-import { ServiceRequestForm } from "@/components/services/service-request-form";
+import { ServiceRequestStepper } from "@/components/services/service-request-stepper";
 
 function toPascalCase(str: string) {
   return str.replace(/(^\w|-\w)/g, (s) => s.replace("-", "").toUpperCase());
@@ -49,9 +49,9 @@ export default async function ServiceDetailPage({ params }: { params: { slug: st
         </div>
       )}
 
-      <div className="mt-12 rounded-lg border border-border bg-surface p-6">
+      <div className="mt-12">
         <h2 className="mb-5 text-base font-semibold text-foreground">Request this service</h2>
-        <ServiceRequestForm serviceId={service.id} />
+        <ServiceRequestStepper services={[{ id: service.id, title: service.title }]} initialServiceId={service.id} />
       </div>
     </main>
   );
