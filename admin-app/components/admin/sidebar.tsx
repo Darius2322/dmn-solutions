@@ -29,47 +29,81 @@ import { ThemeToggle } from "./theme-toggle";
 import { GlobalSearch } from "./global-search";
 import { NotificationBell } from "./notification-bell";
 
-const NAV = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/requests", label: "Requests", icon: Inbox },
-  { href: "/services", label: "Services", icon: Wrench },
-  { href: "/portfolio", label: "Portfolio", icon: FolderKanban },
-  { href: "/customers", label: "Customers", icon: Users },
-  { href: "/reviews", label: "Reviews", icon: Star },
-  { href: "/messages", label: "Messages", icon: MessageSquare },
-  { href: "/referrals", label: "Referrals", icon: Share2 },
-  { href: "/support", label: "Support", icon: HandHeart },
-  { href: "/partners", label: "Partners", icon: Handshake },
-  { href: "/visitors", label: "Visitors", icon: Activity },
-  { href: "/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/media", label: "Media", icon: ImageIcon },
-  { href: "/content", label: "Content", icon: FileText },
-  { href: "/settings", label: "Settings", icon: Settings },
-  { href: "/audit-logs", label: "Audit Logs", icon: ScrollText },
+const NAV_GROUPS: { label: string | null; items: { href: string; label: string; icon: any }[] }[] = [
+  {
+    label: null,
+    items: [{ href: "/", label: "Dashboard", icon: LayoutDashboard }],
+  },
+  {
+    label: "Website",
+    items: [
+      { href: "/services", label: "Services", icon: Wrench },
+      { href: "/portfolio", label: "Portfolio", icon: FolderKanban },
+      { href: "/partners", label: "Partners", icon: Handshake },
+      { href: "/reviews", label: "Reviews", icon: Star },
+      { href: "/content", label: "Content", icon: FileText },
+      { href: "/media", label: "Media", icon: ImageIcon },
+    ],
+  },
+  {
+    label: "Requests & Communication",
+    items: [
+      { href: "/requests", label: "Requests", icon: Inbox },
+      { href: "/customers", label: "Customers", icon: Users },
+      { href: "/messages", label: "Messages", icon: MessageSquare },
+      { href: "/referrals", label: "Referrals", icon: Share2 },
+      { href: "/support", label: "Support", icon: HandHeart },
+    ],
+  },
+  {
+    label: "Analytics",
+    items: [
+      { href: "/analytics", label: "Analytics", icon: BarChart3 },
+      { href: "/visitors", label: "Visitors", icon: Activity },
+    ],
+  },
+  {
+    label: "System",
+    items: [
+      { href: "/settings", label: "Settings", icon: Settings },
+      { href: "/audit-logs", label: "Audit Logs", icon: ScrollText },
+    ],
+  },
 ];
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   return (
-    <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-3 py-4">
-      {NAV.map(({ href, label, icon: Icon }) => {
-        const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
-        return (
-          <Link
-            key={href}
-            href={href}
-            onClick={onNavigate}
-            className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-              active
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:bg-surface hover:text-foreground"
-            }`}
-          >
-            <Icon className="h-4 w-4 shrink-0" />
-            {label}
-          </Link>
-        );
-      })}
+    <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4">
+      {NAV_GROUPS.map((group, gi) => (
+        <div key={group.label ?? `group-${gi}`} className={gi > 0 ? "mt-3" : ""}>
+          {group.label && (
+            <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/70">
+              {group.label}
+            </p>
+          )}
+          <div className="flex flex-col gap-0.5">
+            {group.items.map(({ href, label, icon: Icon }) => {
+              const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={onNavigate}
+                  className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    active
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-surface hover:text-foreground"
+                  }`}
+                >
+                  <Icon className="h-4 w-4 shrink-0" />
+                  {label}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </nav>
   );
 }
