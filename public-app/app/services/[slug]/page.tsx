@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import * as Icons from "lucide-react";
 import type { Metadata } from "next";
 import { CheckCircle2 } from "lucide-react";
 import { getServiceBySlug } from "@/lib/actions/services";
+import { getServiceImage } from "@/lib/service-images";
 import { ServiceRequestStepper } from "@/components/services/service-request-stepper";
 
 function toPascalCase(str: string) {
@@ -23,6 +25,10 @@ export default async function ServiceDetailPage({ params }: { params: { slug: st
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-16">
+      <div className="relative mb-8 h-48 w-full overflow-hidden rounded-lg bg-surface sm:h-64">
+        <Image src={getServiceImage(service.category)} alt={service.title} fill className="object-cover" />
+      </div>
+
       <div className="flex items-start gap-4">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-primary/10">
           <Icon className="h-6 w-6 text-primary" aria-hidden />
