@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, Loader2, ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { CheckCircle2, Loader2, ChevronLeft, ChevronRight, Check, Copy, MessageCircle } from "lucide-react";
 import { submitServiceRequest } from "@/lib/actions/track-order";
 
 const CONTACT_METHODS = [
@@ -16,6 +16,7 @@ type Props = {
   services: ServiceOption[];
   initialServiceId?: string;
   initialNote?: string;
+  initialNoteUrl?: string;
 };
 
 const inputClass =
@@ -33,7 +34,12 @@ function Field({ label, required, children }: { label: string; required?: boolea
   );
 }
 
-export function ServiceRequestStepper({ services, initialServiceId, initialNote }: Props) {
+function buildInitialDescription(note?: string, noteUrl?: string) {
+  if (!note) return "";
+  return noteUrl ? `I'd like something similar to: ${note} (${noteUrl})` : `I'd like something similar to: ${note}`;
+}
+
+export function ServiceRequestStepper({ services, initialServiceId, initialNote, initialNoteUrl }: Props) {
   const startStep = initialServiceId ? 1 : 0;
   const [step, setStep] = useState(startStep);
   const [form, setForm] = useState({
@@ -42,13 +48,14 @@ export function ServiceRequestStepper({ services, initialServiceId, initialNote 
     customerEmail: "",
     customerPhone: "",
     location: "",
-    description: initialNote ? `I'd like something similar to: ${initialNote}` : "",
+    description: buildInitialDescription(initialNote, initialNoteUrl),
     budgetRange: "",
     preferredContact: "email" as (typeof CONTACT_METHODS)[number]["value"],
   });
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "success">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [trackingNumber, setTrackingNumber] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const steps = ["Service", "Project", "Budget", "Contact", "Review"];
   const selectedService = services.find((s) => s.id === form.serviceId);
@@ -81,6 +88,18 @@ export function ServiceRequestStepper({ services, initialServiceId, initialNote 
     setStatus("success");
   }
 
+  function copyTrackingNumber() {
+    navigator.clipboard?.writeText(trackingNumber);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  function shareTrackLinkOnWhatsApp() {
+    const trackUrl = typeof window !== "undefined" ? `${window.location.origin}/track-order` : "/track-order";
+    const text = `My DMN Solutions request tracking number is ${trackingNumber}. Track it here: ${trackUrl}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
+  }
+
   if (status === "success") {
     return (
       <div className="rounded-lg border border-border bg-surface p-6 text-center">
@@ -90,6 +109,24 @@ export function ServiceRequestStepper({ services, initialServiceId, initialNote 
         <p className="mt-3 rounded-md bg-background px-4 py-2 font-mono text-lg font-medium text-foreground">
           {trackingNumber}
         </p>
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
+          <button
+            type="button"
+            onClick={copyTrackingNumber}
+            className="flex items-center gap-1.5 rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/40"
+          >
+            <Copy className="h-3.5 w-3.5" />
+            {copied ? "Copied!" : "Copy number"}
+          </button>
+          <button
+            type="button"
+            onClick={shareTrackLinkOnWhatsApp}
+            className="flex items-center gap-1.5 rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/40"
+          >
+            <MessageCircle className="h-3.5 w-3.5" />
+            Save link on WhatsApp
+          </button>
+        </div>
         <a href="/track-order" className="mt-4 inline-block text-sm font-medium text-primary hover:underline">
           Go to Track Order
         </a>

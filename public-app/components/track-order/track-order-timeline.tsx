@@ -12,8 +12,25 @@ const STAGES = [
   { key: "delivered", label: "Delivered" },
 ] as const;
 
-export function TrackOrderTimeline({ currentStatus }: { currentStatus: string }) {
+type HistoryEntry = { status: string; changedAt: string };
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleString(undefined, {
+    year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
+  });
+}
+
+export function TrackOrderTimeline({
+  currentStatus,
+  createdAt,
+  history = [],
+}: {
+  currentStatus: string;
+  createdAt?: string;
+  history?: HistoryEntry[];
+}) {
   const currentIndex = STAGES.findIndex((s) => s.key === currentStatus);
+  const timestampByStatus = new Map(history.map((h) => [h.status, h.changedAt]));
 
   return (
     <ol className="relative">
@@ -21,6 +38,8 @@ export function TrackOrderTimeline({ currentStatus }: { currentStatus: string })
         const isComplete = currentIndex >= 0 && index < currentIndex;
         const isCurrent = index === currentIndex;
         const isLast = index === STAGES.length - 1;
+        const timestamp =
+          timestampByStatus.get(stage.key) ?? (stage.key === "request_received" ? createdAt : undefined);
 
         return (
           <li key={stage.key} className="relative flex gap-4 pb-8 last:pb-0">
@@ -51,8 +70,9 @@ export function TrackOrderTimeline({ currentStatus }: { currentStatus: string })
               >
                 {stage.label}
               </p>
-              {isCurrent && (
-                <p className="mt-0.5 text-xs text-primary">Current stage</p>
+              {isCurrent && <p className="mt-0.5 text-xs text-primary">Current stage</p>}
+              {(isComplete || isCurrent) && timestamp && (
+                <p className="mt-0.5 text-xs text-muted-foreground">{formatDate(timestamp)}</p>
               )}
             </div>
           </li>

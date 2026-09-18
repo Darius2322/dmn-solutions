@@ -4,8 +4,6 @@ import { getTrackOrderStatus } from "@/lib/actions/track-order";
 import { TrackOrderTimeline } from "@/components/track-order/track-order-timeline";
 import { RefreshButton } from "@/components/track-order/refresh-button";
 
-// Status changes server-side (admin updates); never let this page get
-// statically cached or a customer could see a stale status after Refresh.
 export const dynamic = "force-dynamic";
 
 export default async function TrackOrderStatusPage({
@@ -25,7 +23,7 @@ export default async function TrackOrderStatusPage({
         </p>
         <Link
           href="/track-order"
-          className="mt-6 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
+          className="mt-6 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
         >
           Look up my order
         </Link>
@@ -47,6 +45,10 @@ export default async function TrackOrderStatusPage({
 
       <div className="mb-8 grid grid-cols-2 gap-4 rounded-lg border border-border bg-surface p-5 sm:grid-cols-3">
         <div>
+          <p className="text-xs text-muted-foreground">Requested service</p>
+          <p className="mt-1 text-sm font-medium text-foreground">{request.serviceTitle ?? "—"}</p>
+        </div>
+        <div>
           <p className="text-xs text-muted-foreground">Payment status</p>
           <p className="mt-1 text-sm font-medium capitalize text-foreground">
             {request.payment_status ?? "—"}
@@ -58,16 +60,17 @@ export default async function TrackOrderStatusPage({
             {new Date(request.created_at).toLocaleDateString()}
           </p>
         </div>
-        <div>
-          <p className="text-xs text-muted-foreground">Last updated</p>
-          <p className="mt-1 text-sm font-medium text-foreground">
-            {new Date(request.updated_at).toLocaleDateString()}
-          </p>
-        </div>
       </div>
 
+      {request.description && (
+        <div className="mb-8 rounded-lg border border-border bg-surface p-5">
+          <h2 className="mb-2 text-sm font-medium text-foreground">What you requested</h2>
+          <p className="text-sm text-muted-foreground">{request.description}</p>
+        </div>
+      )}
+
       <h2 className="mb-4 text-sm font-medium text-foreground">Project timeline</h2>
-      <TrackOrderTimeline currentStatus={request.status} />
+      <TrackOrderTimeline currentStatus={request.status} createdAt={request.created_at} history={request.statusHistory} />
 
       {request.customer_notes && (
         <div className="mt-8 rounded-lg border border-border bg-surface p-5">

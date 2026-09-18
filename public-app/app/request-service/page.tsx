@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Request a Service" };
 export default async function RequestServicePage({
   searchParams,
 }: {
-  searchParams: { similar?: string; service?: string };
+  searchParams: { similar?: string; similarUrl?: string; service?: string };
 }) {
   const services = await getActiveServices();
 
@@ -20,6 +20,7 @@ export default async function RequestServicePage({
           services={services.map((s) => ({ id: s.id, title: s.title }))}
           initialServiceId={searchParams.service}
           initialNote={searchParams.similar}
+          initialNoteUrl={searchParams.similarUrl}
         />
       </div>
     </main>

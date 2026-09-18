@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Inbox,
@@ -28,6 +28,13 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { ThemeToggle } from "./theme-toggle";
 import { GlobalSearch } from "./global-search";
 import { NotificationBell } from "./notification-bell";
+import { getUnreadCountsByType } from "@/lib/actions/admin/notifications";
+
+const BADGE_TYPE_BY_HREF: Record<string, string> = {
+  "/requests": "service_request",
+  "/messages": "contact_message",
+  "/support": "support_submission",
+};
 
 const NAV_GROUPS: { label: string | null; items: { href: string; label: string; icon: any }[] }[] = [
   {
@@ -73,6 +80,18 @@ const NAV_GROUPS: { label: string | null; items: { href: string; label: string; 
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
+  const [badgeCounts, setBadgeCounts] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    async function refresh() {
+      const counts = await getUnreadCountsByType();
+      setBadgeCounts(counts);
+    }
+    refresh();
+    const interval = setInterval(refresh, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4">
       {NAV_GROUPS.map((group, gi) => (
@@ -85,6 +104,8 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
           <div className="flex flex-col gap-0.5">
             {group.items.map(({ href, label, icon: Icon }) => {
               const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
+              const badgeType = BADGE_TYPE_BY_HREF[href];
+              const badgeCount = badgeType ? badgeCounts[badgeType] ?? 0 : 0;
               return (
                 <Link
                   key={href}
@@ -97,7 +118,12 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
                   }`}
                 >
                   <Icon className="h-4 w-4 shrink-0" />
-                  {label}
+                  <span className="flex-1">{label}</span>
+                  {badgeCount > 0 && (
+                    <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-error px-1 text-[10px] font-medium text-white">
+                      {badgeCount > 9 ? "9+" : badgeCount}
+                    </span>
+                  )}
                 </Link>
               );
             })}

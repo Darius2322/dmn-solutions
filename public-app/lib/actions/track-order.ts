@@ -87,11 +87,31 @@ export async function getTrackOrderStatus(token: string) {
 
   const { data: request } = await supabase
     .from("service_requests")
-    .select("tracking_number, customer_name, status, payment_status, created_at, updated_at, customer_notes, service_id")
+    .select("id, tracking_number, customer_name, status, payment_status, created_at, updated_at, customer_notes, service_id, description")
     .eq("id", session.service_request_id)
     .single();
 
-  return request ?? null;
+  if (!request) return null;
+
+  let serviceTitle: string | null = null;
+  if (request.service_id) {
+    const { data: service } = await supabase.from("services").select("title").eq("id", request.service_id).single();
+    serviceTitle = service?.title ?? null;
+  }
+
+  const { data: history } = await supabase
+    .from("audit_log")
+    .select("new_state, created_at")
+    .eq("resource_type", "service_request")
+    .eq("resource_id", request.id)
+    .eq("action", "request.status_changed")
+    .order("created_at", { ascending: true });
+
+  const statusHistory = (history ?? [])
+    .map((h) => ({ status: (h.new_state as { status?: string } | null)?.status, changedAt: h.created_at }))
+    .filter((h): h is { status: string; changedAt: string } => !!h.status);
+
+  return { ...request, serviceTitle, statusHistory };
 }
 
 export async function submitReferral(input: ReferralInput) {

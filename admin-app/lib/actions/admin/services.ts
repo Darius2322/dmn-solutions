@@ -148,6 +148,42 @@ export async function assignRequest(requestId: string, assignedTo: string | null
   return { success: true as const };
 }
 
+export async function getRequestStatusHistory(requestId: string) {
+  const admin = await getCurrentAdmin();
+  if (!admin) return [];
+
+  const supabase = createSupabaseAdminClient();
+  const { data } = await supabase
+    .from("audit_log")
+    .select("new_state, created_at")
+    .eq("resource_type", "service_request")
+    .eq("resource_id", requestId)
+    .eq("action", "request.status_changed")
+    .order("created_at", { ascending: true });
+
+  return (data ?? [])
+    .map((h) => ({ status: (h.new_state as { status?: string } | null)?.status, changedAt: h.created_at }))
+    .filter((h): h is { status: string; changedAt: string } => !!h.status);
+}
+
+export async function getRequestStatusHistory(requestId: string) {
+  const admin = await getCurrentAdmin();
+  if (!admin) return [];
+
+  const supabase = createSupabaseAdminClient();
+  const { data } = await supabase
+    .from("audit_log")
+    .select("new_state, created_at")
+    .eq("resource_type", "service_request")
+    .eq("resource_id", requestId)
+    .eq("action", "request.status_changed")
+    .order("created_at", { ascending: true });
+
+  return (data ?? [])
+    .map((h) => ({ status: (h.new_state as { status?: string } | null)?.status, changedAt: h.created_at }))
+    .filter((h): h is { status: string; changedAt: string } => !!h.status);
+}
+
 export async function updateInternalNote(requestId: string, internalNotes: string) {
   const admin = await getCurrentAdmin();
   if (!admin) return { success: false as const, error: "Not authorized" };
