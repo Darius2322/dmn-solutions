@@ -6,7 +6,7 @@ import { getCurrentAdmin } from "@/lib/auth/admin";
 
 type ProjectInput = {
   title: string; slug: string; description: string; category: string;
-  technologies: string[]; imageUrl?: string; liveUrl?: string;
+  technologies: string[]; imageUrl?: string; images?: string[]; liveUrl?: string;
   clientName?: string; completionDate?: string; tags: string[]; featured: boolean;
 };
 
@@ -14,13 +14,14 @@ export async function createProject(input: ProjectInput) {
   const admin = await getCurrentAdmin();
   if (!admin) return { success: false as const, error: "Not authorized" };
 
+  const images = input.images ?? [];
   const supabase = createSupabaseAdminClient();
   const { data, error } = await supabase
     .from("portfolio")
     .insert({
       title: input.title, slug: input.slug, description: input.description,
       category: input.category, technologies: input.technologies,
-      image_url: input.imageUrl ?? null, live_url: input.liveUrl ?? null,
+      image_url: images[0] ?? input.imageUrl ?? null, images, live_url: input.liveUrl ?? null,
       client_name: input.clientName ?? null, completion_date: input.completionDate ?? null,
       tags: input.tags, featured: input.featured,
     })
@@ -38,6 +39,7 @@ export async function updateProject(projectId: string, input: ProjectInput) {
   const admin = await getCurrentAdmin();
   if (!admin) return { success: false as const, error: "Not authorized" };
 
+  const images = input.images ?? [];
   const supabase = createSupabaseAdminClient();
   const { data: before } = await supabase.from("portfolio").select("*").eq("id", projectId).single();
   const { error } = await supabase
@@ -45,7 +47,7 @@ export async function updateProject(projectId: string, input: ProjectInput) {
     .update({
       title: input.title, slug: input.slug, description: input.description,
       category: input.category, technologies: input.technologies,
-      image_url: input.imageUrl ?? null, live_url: input.liveUrl ?? null,
+      image_url: images[0] ?? input.imageUrl ?? null, images, live_url: input.liveUrl ?? null,
       client_name: input.clientName ?? null, completion_date: input.completionDate ?? null,
       tags: input.tags, featured: input.featured, updated_at: new Date().toISOString(),
     })

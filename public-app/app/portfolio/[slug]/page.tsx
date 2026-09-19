@@ -15,11 +15,25 @@ export default async function PortfolioDetailPage({ params }: { params: { slug: 
   const project = await getPortfolioBySlug(params.slug);
   if (!project) notFound();
 
+  const gallery: string[] = project.images && project.images.length > 0
+    ? project.images
+    : project.image_url
+    ? [project.image_url]
+    : [];
+
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
-      {project.image_url ? (
+      {gallery.length > 1 ? (
+        <div className="mb-8 grid gap-3 grid-cols-2">
+          {gallery.map((src, i) => (
+            <div key={i} className={`relative h-40 overflow-hidden rounded-lg bg-surface sm:h-52 ${i === 0 ? "col-span-2 h-56 sm:h-72" : ""}`}>
+              <Image src={src} alt={`${project.title} photo ${i + 1}`} fill className="object-cover" />
+            </div>
+          ))}
+        </div>
+      ) : gallery.length === 1 ? (
         <div className="relative mb-8 h-64 w-full overflow-hidden rounded-lg bg-surface sm:h-80">
-          <Image src={project.image_url} alt={project.title} fill className="object-cover" />
+          <Image src={gallery[0]} alt={project.title} fill className="object-cover" />
         </div>
       ) : (
         <div className="mb-8 flex h-40 w-full items-center justify-center rounded-lg bg-surface-muted">

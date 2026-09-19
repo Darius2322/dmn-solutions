@@ -108,6 +108,7 @@ export type Database = {
           created_at: string;
           active: boolean;
           updated_at: string;
+          images: string[];
         };
         Insert: {
           id?: string;
@@ -125,6 +126,7 @@ export type Database = {
           created_at?: string;
           active?: boolean;
           updated_at?: string;
+          images?: string[];
         };
         Update: {
           id?: string;
@@ -142,6 +144,7 @@ export type Database = {
           created_at?: string;
           active?: boolean;
           updated_at?: string;
+          images?: string[];
         };
         Relationships: [];
       };

@@ -7,7 +7,7 @@ import { createProject, updateProject } from "@/lib/actions/admin/portfolio";
 
 type ProjectLike = {
   id: string; title: string; slug: string; description: string; category: string;
-  technologies: string[]; image_url: string | null; live_url: string | null;
+  technologies: string[]; image_url: string | null; images?: string[] | null; live_url: string | null;
   client_name: string | null; completion_date: string | null; tags: string[]; featured: boolean;
 };
 
@@ -25,7 +25,9 @@ export function PortfolioFormModal({ project }: { project?: ProjectLike }) {
   const [description, setDescription] = useState(project?.description ?? "");
   const [category, setCategory] = useState(project?.category ?? "business");
   const [technologies, setTechnologies] = useState(project?.technologies.join(", ") ?? "");
-  const [imageUrl, setImageUrl] = useState(project?.image_url ?? "");
+  const [imagesText, setImagesText] = useState(
+    (project?.images && project.images.length > 0 ? project.images : project?.image_url ? [project.image_url] : []).join("\n")
+  );
   const [liveUrl, setLiveUrl] = useState(project?.live_url ?? "");
   const [clientName, setClientName] = useState(project?.client_name ?? "");
   const [tags, setTags] = useState(project?.tags.join(", ") ?? "");
@@ -34,13 +36,14 @@ export function PortfolioFormModal({ project }: { project?: ProjectLike }) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    const images = imagesText.split("\n").map((t) => t.trim()).filter(Boolean);
     const input = {
       title,
       slug: project?.slug ?? slugify(title),
       description,
       category,
       technologies: technologies.split(",").map((t) => t.trim()).filter(Boolean),
-      imageUrl: imageUrl || undefined,
+      images,
       liveUrl: liveUrl || undefined,
       clientName: clientName || undefined,
       tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
@@ -93,13 +96,28 @@ export function PortfolioFormModal({ project }: { project?: ProjectLike }) {
                 <input placeholder="Client name" value={clientName} onChange={(e) => setClientName(e.target.value)}
                   className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
               </div>
-              <input placeholder="Image URL" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)}
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                  Photos — one URL per line (job-site photos, screenshots, etc.)
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder={"https://example.com/photo1.jpg\nhttps://example.com/photo2.jpg"}
+                  value={imagesText}
+                  onChange={(e) => setImagesText(e.target.value)}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                  Live URL — optional, leave blank for physical work like electrical or training
+                </label>
+                <input placeholder="https://..." value={liveUrl} onChange={(e) => setLiveUrl(e.target.value)}
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
+              </div>
+              <input placeholder="Technologies (comma-separated, optional)" value={technologies} onChange={(e) => setTechnologies(e.target.value)}
                 className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
-              <input placeholder="Live URL" value={liveUrl} onChange={(e) => setLiveUrl(e.target.value)}
-                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
-              <input placeholder="Technologies (comma-separated)" value={technologies} onChange={(e) => setTechnologies(e.target.value)}
-                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
-              <input placeholder="Tags (comma-separated)" value={tags} onChange={(e) => setTags(e.target.value)}
+              <input placeholder="Tags (comma-separated, optional)" value={tags} onChange={(e) => setTags(e.target.value)}
                 className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
               <label className="flex items-center gap-2 text-sm text-foreground">
                 <input type="checkbox" checked={featured} onChange={(e) => setFeatured(e.target.checked)} />
