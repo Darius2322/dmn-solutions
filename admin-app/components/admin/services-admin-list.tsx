@@ -2,12 +2,13 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { MoreVertical, Trash2, EyeOff, Eye, X } from "lucide-react";
+import { ChevronDown, MoreVertical, Trash2, EyeOff, Eye, X } from "lucide-react";
 import { ServiceStatusToggle } from "@/components/admin/service-status-toggle";
 import { ServiceFormModal } from "@/components/admin/service-form-modal";
 import { DeleteServiceButton } from "@/components/admin/delete-service-button";
 import { DetailsModal } from "@/components/admin/details-modal";
 import { updateServiceStatus, deleteService } from "@/lib/actions/admin/services";
+import { getServiceImage } from "@/lib/service-images";
 
 function formatDate(iso: string | null) {
   if (!iso) return "—";
@@ -17,14 +18,16 @@ function formatDate(iso: string | null) {
 }
 
 type Service = {
-  id: string; title: string; slug: string; category: string;
+  id: string; title: string; slug: string; category: string; description: string;
   active: boolean; created_at: string; updated_at: string | null; sort_order: number | null;
+  price_label: string | null; features: string[] | null;
 };
 
 export function ServicesAdminList({ services }: { services: Service[] }) {
   const router = useRouter();
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function toggleSelectMode() {
@@ -92,83 +95,58 @@ export function ServicesAdminList({ services }: { services: Service[] }) {
         </div>
       )}
 
-      <div className="mt-4 space-y-3 lg:hidden">
-        {services.map((service) => (
-          <div key={service.id} className="relative rounded-lg border border-border bg-surface p-4">
-            <div className="flex items-start gap-3">
-              {selectMode && (
-                <input
-                  type="checkbox"
-                  checked={selected.has(service.id)}
-                  onChange={() => toggleItem(service.id)}
-                  className="mt-1 h-4 w-4 accent-primary"
+      <div className="mt-4 space-y-3">
+        {services.map((service) => {
+          const isExpanded = expandedId === service.id;
+          return (
+            <div key={service.id} className="overflow-hidden rounded-lg border border-border bg-surface">
+              <div className="flex items-start gap-3 p-4">
+                {selectMode && (
+                  <input
+                    type="checkbox"
+                    checked={selected.has(service.id)}
+                    onChange={() => toggleItem(service.id)}
+                    className="mt-1 h-4 w-4 accent-primary"
+                  />
+                )}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={getServiceImage(service.category)}
+                  alt={service.title}
+                  className="h-14 w-14 shrink-0 rounded-md object-cover"
                 />
-              )}
-              <div className="flex-1">
-                <div className="flex items-start justify-between gap-2">
+                <button
+                  type="button"
+                  onClick={() => setExpandedId(isExpanded ? null : service.id)}
+                  className="flex flex-1 items-start justify-between gap-2 text-left"
+                >
                   <div>
                     <p className="text-sm font-medium text-foreground">{service.title}</p>
                     <p className="text-xs text-muted-foreground">{service.category}</p>
                   </div>
-                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs ${service.active ? "bg-success/10 text-success" : "bg-muted-foreground/10 text-muted-foreground"}`}>
-                    {service.active ? "Active" : "Inactive"}
-                  </span>
-                </div>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <ServiceFormModal service={service as any} />
-                  <ServiceStatusToggle serviceId={service.id} active={service.active} />
-                  <DetailsModal
-                    title={service.title}
-                    rows={[
-                      { label: "Added", value: formatDate(service.created_at) },
-                      { label: "Last edited", value: formatDate(service.updated_at) },
-                      { label: "Status", value: service.active ? "Active" : "Inactive" },
-                      { label: "Slug", value: service.slug },
-                      { label: "Sort order", value: String(service.sort_order ?? "—") },
-                    ]}
-                  />
-                  <DeleteServiceButton serviceId={service.id} />
-                </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs ${service.active ? "bg-success/10 text-success" : "bg-muted-foreground/10 text-muted-foreground"}`}>
+                      {service.active ? "Active" : "Inactive"}
+                    </span>
+                    <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+                  </div>
+                </button>
               </div>
-            </div>
-          </div>
-        ))}
-        {services.length === 0 && <p className="text-sm text-muted-foreground">No services yet.</p>}
-      </div>
 
-      <div className="mt-4 hidden overflow-hidden rounded-lg border border-border bg-surface lg:block">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-border bg-background">
-            <tr>
-              {selectMode && <th className="w-10 px-4 py-3"></th>}
-              <th className="px-4 py-3 font-medium text-muted-foreground">Title</th>
-              <th className="px-4 py-3 font-medium text-muted-foreground">Category</th>
-              <th className="px-4 py-3 font-medium text-muted-foreground">Status</th>
-              <th className="px-4 py-3"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {services.map((service) => (
-              <tr key={service.id} className="border-b border-border last:border-0">
-                {selectMode && (
-                  <td className="px-4 py-3">
-                    <input
-                      type="checkbox"
-                      checked={selected.has(service.id)}
-                      onChange={() => toggleItem(service.id)}
-                      className="h-4 w-4 accent-primary"
-                    />
-                  </td>
-                )}
-                <td className="px-4 py-3 text-foreground">{service.title}</td>
-                <td className="px-4 py-3 text-muted-foreground">{service.category}</td>
-                <td className="px-4 py-3">
-                  <span className={`rounded-full px-2 py-0.5 text-xs ${service.active ? "bg-success/10 text-success" : "bg-muted-foreground/10 text-muted-foreground"}`}>
-                    {service.active ? "Active" : "Inactive"}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex justify-end gap-2">
+              {isExpanded && (
+                <div className="border-t border-border px-4 pb-4 pt-3">
+                  <p className="text-sm text-foreground">{service.description}</p>
+                  {service.price_label && (
+                    <p className="mt-2 text-xs font-medium text-secondary">{service.price_label}</p>
+                  )}
+                  {service.features && service.features.length > 0 && (
+                    <ul className="mt-3 space-y-1">
+                      {service.features.map((f) => (
+                        <li key={f} className="text-xs text-muted-foreground">• {f}</li>
+                      ))}
+                    </ul>
+                  )}
+                  <div className="mt-4 flex flex-wrap gap-2">
                     <ServiceFormModal service={service as any} />
                     <ServiceStatusToggle serviceId={service.id} active={service.active} />
                     <DetailsModal
@@ -183,12 +161,12 @@ export function ServicesAdminList({ services }: { services: Service[] }) {
                     />
                     <DeleteServiceButton serviceId={service.id} />
                   </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {services.length === 0 && <p className="p-6 text-sm text-muted-foreground">No services yet.</p>}
+                </div>
+              )}
+            </div>
+          );
+        })}
+        {services.length === 0 && <p className="text-sm text-muted-foreground">No services yet.</p>}
       </div>
     </div>
   );

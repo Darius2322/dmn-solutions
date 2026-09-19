@@ -7,6 +7,7 @@ import { submitReview } from "@/lib/actions/reviews";
 export function ReviewForm() {
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState(0);
+  const [anonymous, setAnonymous] = useState(false);
   const [form, setForm] = useState({ userName: "", service: "", comment: "" });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState("");
@@ -14,7 +15,11 @@ export function ReviewForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("loading");
-    const result = await submitReview({ ...form, rating });
+    const result = await submitReview({
+      ...form,
+      userName: anonymous ? "Anonymous" : form.userName,
+      rating,
+    });
     if (!result.success) {
       setStatus("error");
       setError(result.error);
@@ -54,13 +59,27 @@ export function ReviewForm() {
           </button>
         ))}
       </div>
-      <input
-        required
-        placeholder="Your name"
-        value={form.userName}
-        onChange={(e) => setForm({ ...form, userName: e.target.value })}
-        className={inputClass}
-      />
+
+      {!anonymous && (
+        <input
+          required
+          placeholder="Your name"
+          value={form.userName}
+          onChange={(e) => setForm({ ...form, userName: e.target.value })}
+          className={inputClass}
+        />
+      )}
+
+      <label className="flex items-center gap-2 text-xs text-muted-foreground">
+        <input
+          type="checkbox"
+          checked={anonymous}
+          onChange={(e) => setAnonymous(e.target.checked)}
+          className="h-3.5 w-3.5 accent-primary"
+        />
+        Post anonymously
+      </label>
+
       <input
         placeholder="Service used (optional)"
         value={form.service}
