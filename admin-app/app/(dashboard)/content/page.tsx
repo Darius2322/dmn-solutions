@@ -3,7 +3,20 @@ import { ContentEditor } from "@/components/admin/content-editor";
 
 const EDITABLE_KEYS = [
   { key: "home_hero", label: "Home — Hero section", fallback: { heading: "", subheading: "" } },
-  { key: "about_page", label: "About page", fallback: { mission: "", vision: "", values: [] } },
+  { key: "about_page", label: "About page", fallback: { intro: "", mission: "", vision: "" } },
+  {
+    key: "founder",
+    label: "About page — Founder",
+    fallback: {
+      name: "Darius Momanyi Nyabuti",
+      title: "Founder & CEO — DMN Solutions",
+      bio: "Darius Momanyi Nyabuti is the Founder and CEO of DMN Solutions, a technology and digital solutions company focused on creating practical, reliable and modern solutions for businesses and individuals.",
+      phone: "+254110554040",
+      email: "dariusmomanyi678@gmail.com",
+      whatsapp: "254110554040",
+      photo: "/images/founder/founder-3.jpg",
+    },
+  },
   { key: "contact_info", label: "Contact info", fallback: { phone: "", email: "", whatsapp: "", address: "", hours: "" } },
   { key: "faq_intro", label: "FAQ intro text", fallback: { text: "" } },
 ];

@@ -93,3 +93,26 @@ export async function deletePartner(partnerId: string) {
   revalidatePath("/partners");
   return { success: true as const };
 }
+
+
+const LOGO_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+
+export async function uploadPartnerLogo(formData: FormData) {
+  const admin = await getCurrentAdmin();
+  if (!admin) return { success: false as const, error: "Not authorized" };
+
+  const file = formData.get("file") as File | null;
+  if (!file || file.size === 0) return { success: false as const, error: "No file selected" };
+  if (!LOGO_TYPES.includes(file.type)) return { success: false as const, error: "Use a PNG, JPG, WebP or GIF image" };
+  if (file.size > 2 * 1024 * 1024) return { success: false as const, error: "Logo too large (2MB max)" };
+
+  const supabase = createSupabaseAdminClient();
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
+  const path = `partners/${Date.now()}-${safeName}`;
+
+  const { error } = await supabase.storage.from("website-media").upload(path, file, { contentType: file.type });
+  if (error) return { success: false as const, error: "Upload failed. Try again." };
+
+  const { data } = supabase.storage.from("website-media").getPublicUrl(path);
+  return { success: true as const, url: data.publicUrl };
+}

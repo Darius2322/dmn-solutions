@@ -6,11 +6,39 @@ import { getSiteContent } from "@/lib/content";
 
 export const metadata: Metadata = { title: "About", description: "Learn about DMN Solutions." };
 
-export default async function AboutPage() {
-  const intro = await getSiteContent("about.intro", "DMN Solutions provides practical digital, technology, electrical, computer training and internet-related services depending on location.");
-  const mission = await getSiteContent("about.mission", "To make useful technology and technical skills accessible and dependable for the communities we serve.");
+type AboutContent = { intro?: string; mission?: string; vision?: string };
+type FounderContent = {
+  name?: string; title?: string; bio?: string;
+  phone?: string; email?: string; whatsapp?: string; photo?: string;
+};
 
-  const founderAlt = "Darius Momanyi Nyabuti — Founder and CEO of DMN Solutions";
+const DEFAULT_INTRO = "DMN Solutions provides practical digital, technology, electrical, computer training and internet-related services depending on location.";
+const DEFAULT_MISSION = "To make useful technology and technical skills accessible and dependable for the communities we serve.";
+const DEFAULT_FOUNDER: Required<FounderContent> = {
+  name: "Darius Momanyi Nyabuti",
+  title: "Founder & CEO — DMN Solutions",
+  bio: "Darius Momanyi Nyabuti is the Founder and CEO of DMN Solutions, a technology and digital solutions company focused on creating practical, reliable and modern solutions for businesses and individuals.",
+  phone: "+254110554040",
+  email: "dariusmomanyi678@gmail.com",
+  whatsapp: "254110554040",
+  photo: "/images/founder/founder-3.jpg",
+};
+
+export default async function AboutPage() {
+  const about = await getSiteContent<AboutContent>("about_page", {});
+  const founderRaw = await getSiteContent<FounderContent>("founder", {});
+  const intro = about.intro?.trim() || DEFAULT_INTRO;
+  const mission = about.mission?.trim() || about.vision?.trim() || DEFAULT_MISSION;
+  const f = {
+    name: founderRaw.name?.trim() || DEFAULT_FOUNDER.name,
+    title: founderRaw.title?.trim() || DEFAULT_FOUNDER.title,
+    bio: founderRaw.bio?.trim() || DEFAULT_FOUNDER.bio,
+    phone: founderRaw.phone?.trim() || DEFAULT_FOUNDER.phone,
+    email: founderRaw.email?.trim() || DEFAULT_FOUNDER.email,
+    whatsapp: (founderRaw.whatsapp?.trim() || DEFAULT_FOUNDER.whatsapp).replace(/[^0-9]/g, ""),
+    photo: founderRaw.photo?.trim() || DEFAULT_FOUNDER.photo,
+  };
+  const founderAlt = `${f.name} — Founder and CEO of DMN Solutions`;
 
   return (
     <main>
@@ -30,11 +58,11 @@ export default async function AboutPage() {
       </section>
 
       <div className="mx-auto max-w-3xl px-6 py-16">
-        <p className="text-base text-muted-foreground">{intro as string}</p>
+        <p className="text-base text-muted-foreground">{intro}</p>
 
         <div className="mt-10">
           <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Our mission</h2>
-          <p className="mt-2 text-base text-foreground">{mission as string}</p>
+          <p className="mt-2 text-base text-foreground">{mission}</p>
         </div>
 
         <div className="mt-10 grid gap-6 grid-cols-2">
@@ -61,85 +89,47 @@ export default async function AboutPage() {
         <div className="mt-16">
           <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Meet the Founder</h2>
 
-          {/* Desktop: asymmetric layout */}
-          <div className="mt-4 hidden grid-cols-3 gap-3 sm:grid">
-            <div className="relative col-span-2 h-[412px] overflow-hidden rounded-lg">
+          <div className="mt-4 grid gap-6 sm:grid-cols-5 sm:items-center">
+            <div className="relative mx-auto aspect-[4/5] w-full max-w-xs overflow-hidden rounded-xl border border-border sm:col-span-2 sm:max-w-none">
               <Image
-                src="/images/founder/founder-3.jpg"
+                src={f.photo}
                 alt={founderAlt}
                 fill
-                className="object-cover transition-transform duration-300 hover:scale-105"
+                sizes="(min-width: 640px) 40vw, 80vw"
+                className="object-cover"
               />
             </div>
-            <div className="flex flex-col gap-3">
-              <div className="relative h-[200px] overflow-hidden rounded-lg">
-                <Image
-                  src="/images/founder/founder-1.jpg"
-                  alt={founderAlt}
-                  fill
-                  className="object-cover transition-transform duration-300 hover:scale-105"
-                />
-              </div>
-              <div className="relative h-[200px] overflow-hidden rounded-lg">
-                <Image
-                  src="/images/founder/founder-2.jpg"
-                  alt={founderAlt}
-                  fill
-                  className="object-cover transition-transform duration-300 hover:scale-105"
-                />
-              </div>
-            </div>
-          </div>
 
-          {/* Mobile: swipeable carousel */}
-          <div
-            className="mt-4 flex gap-3 overflow-x-auto pb-2 sm:hidden"
-            style={{ scrollSnapType: "x mandatory" }}
-          >
-            {["founder-3.jpg", "founder-1.jpg", "founder-2.jpg"].map((src) => (
-              <div
-                key={src}
-                className="relative h-72 w-56 shrink-0 overflow-hidden rounded-lg"
-                style={{ scrollSnapAlign: "start" }}
-              >
-                <Image src={`/images/founder/${src}`} alt={founderAlt} fill className="object-cover" />
+            <div className="sm:col-span-3">
+              <p className="text-lg font-semibold text-foreground">{f.name}</p>
+              <p className="text-sm text-secondary">{f.title}</p>
+              <p className="mt-4 text-sm text-muted-foreground">{f.bio}</p>
+
+              <div className="mt-5 flex flex-wrap gap-2">
+                <a
+                  href={`tel:${f.phone}`}
+                  className="flex items-center gap-1.5 rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/40"
+                >
+                  <Phone className="h-4 w-4" aria-hidden />
+                  Call Me
+                </a>
+                <a
+                  href={`mailto:${f.email}`}
+                  className="flex items-center gap-1.5 rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/40"
+                >
+                  <Mail className="h-4 w-4" aria-hidden />
+                  Email Me
+                </a>
+                <a
+                  href={`https://wa.me/${f.whatsapp}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
+                >
+                  <MessageCircle className="h-4 w-4" aria-hidden />
+                  WhatsApp
+                </a>
               </div>
-            ))}
-          </div>
-
-          <div className="mt-6">
-            <p className="text-lg font-semibold text-foreground">Darius Momanyi Nyabuti</p>
-            <p className="text-sm text-secondary">Founder & CEO — DMN Solutions</p>
-            <p className="mt-4 text-sm text-muted-foreground">
-              Darius Momanyi Nyabuti is the Founder and CEO of DMN Solutions, a technology and digital
-              solutions company focused on creating practical, reliable and modern solutions for
-              businesses and individuals.
-            </p>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              <a
-                href="tel:+254110554040"
-                className="flex items-center gap-1.5 rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/40"
-              >
-                <Phone className="h-4 w-4" aria-hidden />
-                Call Me
-              </a>
-              <a
-                href="mailto:dariusmomanyi678@gmail.com"
-                className="flex items-center gap-1.5 rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/40"
-              >
-                <Mail className="h-4 w-4" aria-hidden />
-                Email Me
-              </a>
-              <a
-                href="https://wa.me/254110554040"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
-              >
-                <MessageCircle className="h-4 w-4" aria-hidden />
-                WhatsApp
-              </a>
             </div>
           </div>
         </div>

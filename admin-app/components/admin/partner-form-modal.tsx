@@ -2,8 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Plus, Pencil, X } from "lucide-react";
-import { createPartner, updatePartner } from "@/lib/actions/admin/partners";
+import { Loader2, Plus, Pencil, X, Upload } from "lucide-react";
+import { createPartner, updatePartner, uploadPartnerLogo } from "@/lib/actions/admin/partners";
 
 type PartnerLike = {
   id: string; name: string; logo_url: string | null; website_url: string | null; sort_order: number;
@@ -14,11 +14,26 @@ export function PartnerFormModal({ partner }: { partner?: PartnerLike }) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const [name, setName] = useState(partner?.name ?? "");
   const [logoUrl, setLogoUrl] = useState(partner?.logo_url ?? "");
   const [websiteUrl, setWebsiteUrl] = useState(partner?.website_url ?? "");
   const [sortOrder, setSortOrder] = useState(String(partner?.sort_order ?? 0));
+
+  async function handleLogoFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setError("");
+    setUploading(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    const result = await uploadPartnerLogo(fd);
+    setUploading(false);
+    e.target.value = "";
+    if (!result.success) { setError(result.error); return; }
+    setLogoUrl(result.url);
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -64,10 +79,19 @@ export function PartnerFormModal({ partner }: { partner?: PartnerLike }) {
                   className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-muted-foreground">Logo URL</label>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">Logo</label>
+                {logoUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={logoUrl} alt="Logo preview" className="mb-2 h-14 w-auto max-w-full rounded border border-border bg-background object-contain p-1" />
+                )}
+                <label className="flex cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-border px-3 py-2 text-sm text-foreground hover:bg-background">
+                  {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                  {uploading ? "Uploading…" : "Upload logo from phone or computer"}
+                  <input type="file" accept="image/*" onChange={handleLogoFile} disabled={uploading} className="hidden" />
+                </label>
                 <input value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)}
-                  placeholder="https://..."
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
+                  placeholder="…or paste a logo URL (https://...)"
+                  className="mt-2 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-muted-foreground">Website URL</label>
@@ -82,7 +106,7 @@ export function PartnerFormModal({ partner }: { partner?: PartnerLike }) {
               </div>
             </div>
             {error && <p className="mt-3 text-sm text-error">{error}</p>}
-            <button type="submit" disabled={isPending}
+            <button type="submit" disabled={isPending || uploading}
               className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-60">
               {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               {partner ? "Save changes" : "Add partner"}
