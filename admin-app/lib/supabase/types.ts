@@ -536,6 +536,9 @@ export type Database = {
           browser: string | null;
           os: string | null;
           country: string | null;
+          region: string | null;
+          county: string | null;
+          city: string | null;
           referrer: string | null;
         };
         Insert: {
@@ -547,6 +550,9 @@ export type Database = {
           browser?: string | null;
           os?: string | null;
           country?: string | null;
+          region?: string | null;
+          county?: string | null;
+          city?: string | null;
           referrer?: string | null;
         };
         Update: {
@@ -558,6 +564,9 @@ export type Database = {
           browser?: string | null;
           os?: string | null;
           country?: string | null;
+          region?: string | null;
+          county?: string | null;
+          city?: string | null;
           referrer?: string | null;
         };
         Relationships: [];

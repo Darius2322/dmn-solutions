@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { readGeo } from "@/lib/geo";
 
 function parseUserAgent(ua: string) {
   const isMobile = /Mobile|Android|iPhone/i.test(ua);
@@ -15,25 +16,29 @@ export async function POST(request: NextRequest) {
   const supabase = createSupabaseAdminClient();
   const ua = request.headers.get("user-agent") ?? "";
   const { device_category, browser, os } = parseUserAgent(ua);
+  const geo = readGeo(request.headers);
 
   const existing = await supabase
     .from("visitor_sessions")
-    .select("id")
+    .select("id, country")
     .eq("session_token", body.sessionId)
     .maybeSingle();
-  const existingRow = existing.data as { id: string } | null;
+  const existingRow = existing.data as { id: string; country: string | null } | null;
   let sessionRowId: string | undefined = existingRow?.id;
 
   if (!sessionRowId) {
     const inserted = await supabase
       .from("visitor_sessions")
-      .insert({ session_token: body.sessionId, device_category, browser, os, referrer: body.referrer ?? null })
+      .insert({ session_token: body.sessionId, device_category, browser, os, referrer: body.referrer ?? null, ...geo })
       .select("id")
       .maybeSingle();
     const insertedRow = inserted.data as { id: string } | null;
     sessionRowId = insertedRow?.id;
   } else {
-    await supabase.from("visitor_sessions").update({ last_seen: new Date().toISOString() }).eq("id", sessionRowId);
+    await supabase
+      .from("visitor_sessions")
+      .update({ last_seen: new Date().toISOString(), ...(existingRow?.country ? {} : geo) })
+      .eq("id", sessionRowId);
   }
 
   if (sessionRowId) {

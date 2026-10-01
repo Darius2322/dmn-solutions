@@ -150,7 +150,7 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
   const prevSince = active.days === null || sinceMs === null ? null : new Date(sinceMs - active.days * DAY_MS).toISOString();
 
   type PV = { session_id: string; path: string; viewed_at: string };
-  type Sess = { id: string; device_category: string | null; browser: string | null; os: string | null; referrer: string | null; first_seen: string; last_seen: string };
+  type Sess = { id: string; country: string | null; region: string | null; county: string | null; city: string | null; device_category: string | null; browser: string | null; os: string | null; referrer: string | null; first_seen: string; last_seen: string };
   type Ev = { event_type: string; created_at: string };
 
   const pvs = await fetchAll<PV>((from, to) => {
@@ -177,7 +177,7 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
     await fetchAll<Sess>((from, to) => {
       let q = supabase
         .from("visitor_sessions")
-        .select("id, device_category, browser, os, referrer, first_seen, last_seen")
+        .select("id, country, region, county, city, device_category, browser, os, referrer, first_seen, last_seen")
         .order("first_seen", { ascending: false });
       if (since) q = q.gte("last_seen", since);
       return q.range(from, to) as unknown as PromiseLike<{ data: Sess[] | null }>;
@@ -307,6 +307,20 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
   const deviceRows = tally(sessions, (s) => s.device_category ?? "unknown").map(([label, value]) => ({ label, value }));
   const browserRows = tally(sessions, (s) => s.browser ?? "unknown").map(([label, value]) => ({ label, value }));
   const osRows = tally(sessions, (s) => s.os ?? "unknown").map(([label, value]) => ({ label, value }));
+  const countryNames = new Intl.DisplayNames(["en"], { type: "region" });
+  const countryName = (code: string) => {
+    try { return countryNames.of(code) ?? code; } catch { return code; }
+  };
+  const located = sessions.filter((s) => s.country);
+  const countryRows = tally(located, (s) => countryName(s.country!)).slice(0, 10).map(([label, value]) => ({ label, value }));
+  const kenyaSessions = located.filter((s) => s.country === "KE");
+  const countyRows = tally(kenyaSessions.filter((s) => s.county), (s) => s.county!).slice(0, 12).map(([label, value]) => ({ label, value }));
+  const regionRows = tally(
+    located.filter((s) => s.region),
+    (s) => (s.country === "KE" ? s.region! : `${s.region}, ${countryName(s.country!)}`)
+  ).slice(0, 10).map(([label, value]) => ({ label, value }));
+  const cityRows = tally(located.filter((s) => s.city), (s) => `${s.city}${s.country && s.country !== "KE" ? `, ${countryName(s.country)}` : ""}`)
+    .slice(0, 12).map(([label, value]) => ({ label, value }));
   const googleVisitors = sessions.filter((s) => classifySource(s.referrer) === "Google").length;
 
   // ----- goals -----
@@ -429,6 +443,33 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
           <BarList rows={osRows} empty="No data yet." total={visitors} />
         </Section>
       </div>
+
+      <Section
+        title="Where visitors are"
+        subtitle={`Country, county, region and city. Recorded for ${located.length} of ${visitors} visitors; visits before location tracking was added show no location.`}
+      >
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div>
+            <p className="mb-2 text-xs font-medium text-muted-foreground">Country</p>
+            <BarList rows={countryRows} empty="No location data yet. It fills in as new visitors arrive." total={located.length} />
+          </div>
+          <div>
+            <p className="mb-2 text-xs font-medium text-muted-foreground">County (Kenya)</p>
+            <BarList rows={countyRows} empty="No county data yet." total={kenyaSessions.length} />
+          </div>
+          <div>
+            <p className="mb-2 text-xs font-medium text-muted-foreground">Region</p>
+            <BarList rows={regionRows} empty="No region data yet." total={located.length} />
+          </div>
+          <div>
+            <p className="mb-2 text-xs font-medium text-muted-foreground">City</p>
+            <BarList rows={cityRows} empty="No city data yet." total={located.length} />
+          </div>
+        </div>
+        <p className="mt-4 text-[11px] text-muted-foreground">
+          Location comes from the visitor&apos;s internet connection, so it is approximate. Mobile data users are often placed in the nearest big city (usually Nairobi).
+        </p>
+      </Section>
 
       <Section title="Results (what visitors did)" subtitle="Actions taken in this period">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">

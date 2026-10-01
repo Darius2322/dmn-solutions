@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/navbar";
@@ -55,6 +56,8 @@ const structuredData = {
   ],
 };
 
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en-KE" className={`${inter.variable} ${spaceGrotesk.variable}`}>
@@ -71,6 +74,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
+        {GA_ID && (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
+            <Script id="ga4-init" strategy="afterInteractive">
+              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`}
+            </Script>
+          </>
+        )}
         <TrackPageView />
         <Navbar />
         <div className="flex-1">{children}</div>
