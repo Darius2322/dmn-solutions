@@ -12,7 +12,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-heading" });
 
 function resolveSiteUrl() {
-  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dmnsolutions.co.ke";
+  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.dmnsolutions.co.ke";
   return /^https?:\/\//.test(raw) ? raw : `https://${raw}`;
 }
 

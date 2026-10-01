@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 function resolveSiteUrl() {
-  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dmnsolutions.co.ke";
+  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.dmnsolutions.co.ke";
   return /^https?:\/\//.test(raw) ? raw : `https://${raw}`;
 }
 

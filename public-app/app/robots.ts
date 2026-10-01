@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 function resolveSiteUrl() {
-  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dmnsolutions.co.ke";
+  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.dmnsolutions.co.ke";
   return /^https?:\/\//.test(raw) ? raw : `https://${raw}`;
 }
 
