@@ -31,6 +31,30 @@ export const metadata: Metadata = {
   },
 };
 
+const SITE_URL = resolveSiteUrl();
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      name: "DMN Solutions",
+      alternateName: ["DMN Solutions Kenya", "DMN"],
+      url: `${SITE_URL}/`,
+      inLanguage: "en-KE",
+    },
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: "DMN Solutions",
+      url: `${SITE_URL}/`,
+      logo: `${SITE_URL}/icons/icon-512.png`,
+      areaServed: "KE",
+    },
+  ],
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en-KE" className={`${inter.variable} ${spaceGrotesk.variable}`}>
@@ -43,6 +67,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="flex min-h-screen flex-col antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
         <TrackPageView />
         <Navbar />
         <div className="flex-1">{children}</div>
