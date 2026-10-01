@@ -19,20 +19,21 @@ function resolveSiteUrl() {
 export const metadata: Metadata = {
   metadataBase: new URL(resolveSiteUrl()),
   title: {
-    default: "DMN Solutions — Technology, Electrical & Training Services",
+    default: "DMN Solutions Kenya — Technology, Electrical & Training Services in Nairobi",
     template: "%s | DMN Solutions",
   },
   description:
-    "DMN Solutions provides practical digital, technology, electrical, computer training and internet services.",
+    "DMN Solutions Kenya provides practical digital, technology, electrical installation, computer training and internet services in Nairobi and across Kenya.",
   openGraph: {
     type: "website",
     siteName: "DMN Solutions",
+    locale: "en_KE",
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en-KE" className={`${inter.variable} ${spaceGrotesk.variable}`}>
       <head>
         <script
           dangerouslySetInnerHTML={{
