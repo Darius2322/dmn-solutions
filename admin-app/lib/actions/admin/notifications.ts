@@ -49,24 +49,6 @@ export async function getUnreadCountsByType() {
   return counts;
 }
 
-export async function getUnreadCountsByType() {
-  const admin = await getCurrentAdmin();
-  if (!admin) return {} as Record<string, number>;
-
-  const supabase = createSupabaseAdminClient();
-  const { data } = await supabase
-    .from("notifications")
-    .select("type")
-    .eq("recipient_type", "admin")
-    .eq("read", false);
-
-  const counts: Record<string, number> = {};
-  (data ?? []).forEach((n) => {
-    counts[n.type] = (counts[n.type] ?? 0) + 1;
-  });
-  return counts;
-}
-
 export async function markNotificationRead(notificationId: string) {
   const admin = await getCurrentAdmin();
   if (!admin) return { success: false as const, error: "Not authorized" };
