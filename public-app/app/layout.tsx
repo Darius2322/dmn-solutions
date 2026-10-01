@@ -5,11 +5,14 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { TrackPageView } from "@/components/analytics/track-page-view";
 
+// Render all pages on demand so edits made in the admin Content editor show up immediately.
+export const dynamic = "force-dynamic";
+
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-heading" });
 
 function resolveSiteUrl() {
-  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dmn-solution.vercel.app";
+  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dmnsolutions.co.ke";
   return /^https?:\/\//.test(raw) ? raw : `https://${raw}`;
 }
 
