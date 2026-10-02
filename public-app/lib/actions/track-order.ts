@@ -2,6 +2,7 @@
 
 import { randomBytes } from "crypto";
 import { createSupabaseAdminClient } from "@/lib/supabase/server";
+import { notifyAdminByEmail } from "@/lib/email";
 import {
   serviceRequestSchema,
   trackOrderLookupSchema,
@@ -47,6 +48,15 @@ export async function submitServiceRequest(input: ServiceRequestInput) {
     title: `New service request from ${parsed.data.customerName}`,
     message: parsed.data.description,
     service_request_id: data.id,
+  });
+
+  await notifyAdminByEmail(`New service request from ${parsed.data.customerName}`, {
+    Name: parsed.data.customerName,
+    Tracking: data.tracking_number as string,
+    Location: parsed.data.location,
+    Budget: parsed.data.budgetRange,
+    "Preferred contact": parsed.data.preferredContact,
+    Details: parsed.data.description,
   });
 
   return { success: true as const, trackingNumber: data.tracking_number as string };
@@ -159,6 +169,13 @@ export async function submitSupportSubmission(input: SupportSubmissionInput) {
     message: parsed.data.details,
   });
 
+  await notifyAdminByEmail(`New ${parsed.data.type.replace(/_/g, " ")} from ${parsed.data.donorName || "Anonymous"}`, {
+    Name: parsed.data.donorName,
+    Email: parsed.data.donorEmail,
+    Phone: parsed.data.donorPhone,
+    Details: parsed.data.details,
+  });
+
   return { success: true as const };
 }
 
@@ -180,6 +197,12 @@ export async function submitContactMessage(input: ContactInput) {
     type: "contact_message",
     title: `New message from ${parsed.data.name}`,
     message: parsed.data.message,
+  });
+
+  await notifyAdminByEmail(`New message from ${parsed.data.name}`, {
+    Name: parsed.data.name,
+    Email: parsed.data.email,
+    Message: parsed.data.message,
   });
 
   return { success: true as const };
