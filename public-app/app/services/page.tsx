@@ -1,9 +1,8 @@
 import Link from "next/link";
-import Image from "next/image";
 import * as Icons from "lucide-react";
 import type { Metadata } from "next";
 import { getActiveServices } from "@/lib/actions/services";
-import { getServiceImage } from "@/lib/service-images";
+import { ServiceVisual } from "@/components/ui/service-visual";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -50,14 +49,8 @@ export default async function ServicesPage() {
                   className="group overflow-hidden rounded-lg border border-border bg-surface transition-colors hover:border-primary/40"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden bg-surface-muted">
-                    <Image
-                      src={getServiceImage(service.category)}
-                      alt=""
-                      fill
-                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
+                    <ServiceVisual category={service.category} className="transition-transform duration-300 group-hover:scale-105" />
+</div>
                   <div className="p-5">
                     <Icon className="h-6 w-6 text-primary" aria-hidden />
                     <h3 className="mt-3 text-sm font-medium text-foreground">{service.title}</h3>

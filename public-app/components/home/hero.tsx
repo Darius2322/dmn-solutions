@@ -1,19 +1,22 @@
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 export function Hero() {
   return (
     <section className="relative overflow-hidden bg-ink">
-      <Image
-        src="https://images.unsplash.com/photo-1531973576160-7125cd663d86?auto=format&fit=crop&w=2400&q=80"
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover opacity-50"
+      <div
+        aria-hidden
+        className="absolute inset-0 opacity-[0.10]"
+        style={{
+          backgroundImage:
+            "linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+          maskImage: "linear-gradient(to bottom right, black, transparent 75%)",
+          WebkitMaskImage: "linear-gradient(to bottom right, black, transparent 75%)",
+        }}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/55 to-ink/35" />
+      <div aria-hidden className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-primary/30 blur-3xl" />
+      <div aria-hidden className="absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-secondary/20 blur-3xl" />
       <div className="relative mx-auto max-w-6xl px-6 py-20 sm:py-28">
         <div className="max-w-2xl">
           <h1 className="text-3xl font-semibold tracking-tight text-ink-foreground sm:text-4xl">

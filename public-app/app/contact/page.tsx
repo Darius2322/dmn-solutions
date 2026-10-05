@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Mail, Phone, MessageCircle, Clock } from "lucide-react";
 import { ContactForm } from "@/components/contact-form";
 
@@ -9,15 +8,16 @@ export default function ContactPage() {
   return (
     <main>
       <section className="relative overflow-hidden bg-ink">
-        <Image
-          src="https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=2000&q=80"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover opacity-30"
+        <div
+          aria-hidden
+          className="absolute inset-0 opacity-[0.10]"
+          style={{
+            backgroundImage:
+              "linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
         />
-        <div className="absolute inset-0 bg-ink/70" />
+        <div aria-hidden className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-primary/30 blur-3xl" />
         <div className="relative mx-auto max-w-4xl px-6 py-16 sm:py-20">
           <h1 className="text-2xl font-semibold text-ink-foreground sm:text-3xl">Contact us</h1>
           <p className="mt-3 max-w-xl text-sm text-ink-muted-foreground sm:text-base">

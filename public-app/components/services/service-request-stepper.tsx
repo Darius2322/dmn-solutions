@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, Loader2, ChevronLeft, ChevronRight, Check, Copy, MessageCircle } from "lucide-react";
+import { CheckCircle2, Loader2, ChevronLeft, ChevronRight, Check, Copy, MessageCircle, Wrench, ClipboardList, Wallet, UserRound, ClipboardCheck } from "lucide-react";
+import { LocationInput } from "@/components/ui/location-input";
 import { submitServiceRequest } from "@/lib/actions/track-order";
 
 const CONTACT_METHODS = [
@@ -57,7 +58,14 @@ export function ServiceRequestStepper({ services, initialServiceId, initialNote,
   const [trackingNumber, setTrackingNumber] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const steps = ["Service", "Project", "Budget", "Contact", "Review"];
+  const stepMeta = [
+    { label: "Service", Icon: Wrench },
+    { label: "Project", Icon: ClipboardList },
+    { label: "Budget", Icon: Wallet },
+    { label: "Contact", Icon: UserRound },
+    { label: "Review", Icon: ClipboardCheck },
+  ];
+  const steps = stepMeta.map((m) => m.label);
   const selectedService = services.find((s) => s.id === form.serviceId);
 
   function canProceed() {
@@ -136,20 +144,40 @@ export function ServiceRequestStepper({ services, initialServiceId, initialNote,
 
   return (
     <div className="rounded-lg border border-border bg-surface p-6">
-      <div className="mb-8 flex items-center gap-2">
-        {steps.map((label, i) => (
-          <div key={label} className="flex flex-1 items-center gap-2">
-            <div
-              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-medium ${
-                i < step ? "bg-primary text-primary-foreground" : i === step ? "border-2 border-primary text-primary" : "border border-border text-muted-foreground"
-              }`}
-            >
-              {i < step ? <Check className="h-3.5 w-3.5" /> : i + 1}
-            </div>
-            {i < steps.length - 1 && <div className={`h-px flex-1 ${i < step ? "bg-primary" : "bg-border"}`} />}
-          </div>
-        ))}
-      </div>
+      <ol className="mb-8 flex items-start" aria-label="Request progress">
+        {stepMeta.map(({ label, Icon }, i) => {
+          const done = i < step;
+          const active = i === step;
+          return (
+            <li key={label} className="relative flex flex-1 flex-col items-center" aria-current={active ? "step" : undefined}>
+              {i > 0 && (
+                <span
+                  aria-hidden
+                  className={`absolute right-1/2 top-5 -z-0 h-px w-full ${i <= step ? "bg-primary" : "bg-border"}`}
+                />
+              )}
+              <span
+                className={`relative z-10 flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
+                  done
+                    ? "bg-primary text-primary-foreground"
+                    : active
+                    ? "border-2 border-primary bg-surface text-primary"
+                    : "border border-border bg-surface text-muted-foreground"
+                }`}
+              >
+                {done ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" aria-hidden />}
+              </span>
+              <span
+                className={`mt-2 text-[11px] leading-tight sm:text-xs ${
+                  active ? "font-semibold text-foreground" : done ? "font-medium text-foreground" : "text-muted-foreground"
+                }`}
+              >
+                {label}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
 
       {step === 0 && (
         <div className="space-y-3">
@@ -183,10 +211,9 @@ export function ServiceRequestStepper({ services, initialServiceId, initialNote,
             />
           </Field>
           <Field label="Location">
-            <input
-              type="text"
+            <LocationInput
               value={form.location}
-              onChange={(e) => setForm({ ...form, location: e.target.value })}
+              onChange={(location) => setForm((f) => ({ ...f, location }))}
               className={inputClass}
             />
           </Field>

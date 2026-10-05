@@ -43,15 +43,16 @@ export default async function AboutPage() {
   return (
     <main>
       <section className="relative overflow-hidden bg-ink">
-        <Image
-          src="https://images.unsplash.com/photo-1560264280-88b68371db39?auto=format&fit=crop&w=2000&q=80"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover opacity-40"
+        <div
+          aria-hidden
+          className="absolute inset-0 opacity-[0.10]"
+          style={{
+            backgroundImage:
+              "linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/60 to-ink/40" />
+        <div aria-hidden className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/30 blur-3xl" />
         <div className="relative mx-auto max-w-3xl px-6 py-16 sm:py-20">
           <h1 className="text-2xl font-semibold text-ink-foreground sm:text-3xl">About DMN Solutions</h1>
         </div>
@@ -90,14 +91,25 @@ export default async function AboutPage() {
           <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Meet the Founder</h2>
 
           <div className="mt-4 grid gap-6 sm:grid-cols-5 sm:items-center">
-            <div className="relative mx-auto aspect-[4/5] w-full max-w-xs overflow-hidden rounded-xl border border-border sm:col-span-2 sm:max-w-none">
-              <Image
-                src={f.photo}
-                alt={founderAlt}
-                fill
-                sizes="(min-width: 640px) 40vw, 80vw"
-                className="object-cover"
-              />
+            <div className="relative mx-auto w-full max-w-xs sm:col-span-2 sm:max-w-none">
+              {/* offset copper accent + soft glow behind the frame */}
+              <div aria-hidden className="absolute -bottom-3 -right-3 h-full w-full rounded-2xl bg-secondary/80" />
+              <div aria-hidden className="absolute -inset-4 -z-10 rounded-3xl bg-primary/20 blur-2xl" />
+              <div className="relative rounded-2xl bg-gradient-to-br from-primary via-primary/70 to-secondary p-[3px] shadow-xl">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-[calc(1rem-3px)] bg-ink">
+                  <Image
+                    src={f.photo}
+                    alt={founderAlt}
+                    fill
+                    sizes="(min-width: 640px) 40vw, 80vw"
+                    className="object-cover object-top"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/90 via-ink/50 to-transparent px-4 pb-4 pt-12">
+                    <p className="text-sm font-semibold text-ink-foreground">{f.name}</p>
+                    <p className="text-xs text-ink-muted-foreground">Founder &amp; CEO</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="sm:col-span-3">
