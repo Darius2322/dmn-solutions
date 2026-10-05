@@ -3,7 +3,7 @@ import { Star } from "lucide-react";
 import { getApprovedReviews } from "@/lib/actions/reviews";
 import { ReviewForm } from "@/components/review-form";
 
-export const metadata: Metadata = { title: "Reviews", description: "What our customers say about DMN Solutions." };
+export const metadata: Metadata = { title: "Reviews", description: "Customer reviews of DMN Solutions services in Kenya — web development, electrical installation, computer training and internet services." };
 
 function getInitials(name: string) {
   const parts = name.trim().split(/\s+/);

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getActiveServices } from "@/lib/actions/services";
 import { ServiceRequestStepper } from "@/components/services/service-request-stepper";
 
-export const metadata: Metadata = { title: "Request a Service" };
+export const metadata: Metadata = { title: "Request a Service", description: "Request web development, electrical installation, computer training or internet services from DMN Solutions in Nairobi, Kisii, Nyamira and across Kenya. Get a tracking number instantly." };
 
 export default async function RequestServicePage({
   searchParams,

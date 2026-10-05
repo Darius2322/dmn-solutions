@@ -8,9 +8,9 @@ const EDITABLE_KEYS = [
     key: "founder",
     label: "About page — Founder",
     fallback: {
-      name: "Darius Momanyi Nyabuti",
+      name: "Darius Momanyi",
       title: "Founder & CEO — DMN Solutions",
-      bio: "Darius Momanyi Nyabuti is the Founder and CEO of DMN Solutions, a technology and digital solutions company focused on creating practical, reliable and modern solutions for businesses and individuals.",
+      bio: "Darius Momanyi is the Founder and CEO of DMN Solutions, a technology and digital solutions company focused on creating practical, reliable and modern solutions for businesses and individuals.",
       phone: "+254110554040",
       email: "dariusmomanyi678@gmail.com",
       whatsapp: "254110554040",

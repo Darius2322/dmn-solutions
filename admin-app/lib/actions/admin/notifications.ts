@@ -74,3 +74,21 @@ export async function markAllNotificationsRead() {
   revalidatePath("/");
   return { success: true as const };
 }
+
+export async function getAdminNotificationSnapshot() {
+  const admin = await getCurrentAdmin();
+  if (!admin) return { unread: 0, latest: null as null | { id: string; title: string; message: string | null; type: string; created_at: string } };
+
+  const supabase = createSupabaseAdminClient();
+  const [{ count }, { data: latest }] = await Promise.all([
+    supabase.from("notifications").select("id", { count: "exact", head: true }).eq("recipient_type", "admin").eq("read", false),
+    supabase
+      .from("notifications")
+      .select("id, title, message, type, created_at")
+      .eq("recipient_type", "admin")
+      .eq("read", false)
+      .order("created_at", { ascending: false })
+      .limit(1),
+  ]);
+  return { unread: count ?? 0, latest: latest?.[0] ?? null };
+}

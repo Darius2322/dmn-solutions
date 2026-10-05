@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getActiveFaqs } from "@/lib/actions/faqs";
 import { FaqAccordion } from "@/components/faq-accordion";
 
-export const metadata: Metadata = { title: "FAQ" };
+export const metadata: Metadata = { title: "FAQ", description: "Answers about DMN Solutions services in Kenya: web development, electrical installation, computer training, internet services, pricing and tracking your request." };
 
 export default async function FaqPage() {
   const faqs = await getActiveFaqs();

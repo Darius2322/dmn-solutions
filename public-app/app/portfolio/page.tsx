@@ -3,7 +3,7 @@ import { getPortfolioProjects } from "@/lib/actions/portfolio";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { SiteWorkGallery, type SiteWork } from "@/components/site-work-gallery";
 
-export const metadata: Metadata = { title: "Portfolio", description: "Recent work from DMN Solutions." };
+export const metadata: Metadata = { title: "Portfolio", description: "Portfolio of DMN Solutions: websites, software, electrical installations and site work completed for clients in Nairobi, Kisii, Nyamira and across Kenya." };
 
 export default async function PortfolioPage() {
   const projects = await getPortfolioProjects();

@@ -8,7 +8,7 @@ function resolveSiteUrl() {
 
 const BASE_URL = resolveSiteUrl();
 
-const STATIC_ROUTES = ["", "/services", "/portfolio", "/about", "/support", "/track-order", "/contact", "/referral", "/donate", "/privacy", "/terms", "/refund-policy"];
+const STATIC_ROUTES = ["", "/services", "/portfolio", "/about", "/support", "/track-order", "/contact", "/referral", "/donate", "/privacy", "/terms", "/refund-policy", "/faq", "/reviews", "/request-service", "/work-with-us"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createSupabaseServerClient();

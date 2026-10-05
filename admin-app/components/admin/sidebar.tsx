@@ -90,7 +90,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
       setBadgeCounts(counts);
     }
     refresh();
-    const interval = setInterval(refresh, 30000);
+    const interval = setInterval(refresh, 10000);
     return () => clearInterval(interval);
   }, []);
 

@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { Phone, Mail, MessageCircle } from "lucide-react";
 import { getSiteContent } from "@/lib/content";
 
-export const metadata: Metadata = { title: "About", description: "Learn about DMN Solutions." };
+export const metadata: Metadata = { title: "About", description: "About DMN Solutions — a Kenyan technology company offering web & software development, electrical installation, computer training and internet services in Nairobi, Kisii and Nyamira." };
 
 type AboutContent = { intro?: string; mission?: string; vision?: string };
 type FounderContent = {
@@ -15,9 +15,9 @@ type FounderContent = {
 const DEFAULT_INTRO = "DMN Solutions provides practical digital, technology, electrical, computer training and internet-related services depending on location.";
 const DEFAULT_MISSION = "To make useful technology and technical skills accessible and dependable for the communities we serve.";
 const DEFAULT_FOUNDER: Required<FounderContent> = {
-  name: "Darius Momanyi Nyabuti",
+  name: "Darius Momanyi",
   title: "Founder & CEO — DMN Solutions",
-  bio: "Darius Momanyi Nyabuti is the Founder and CEO of DMN Solutions, a technology and digital solutions company focused on creating practical, reliable and modern solutions for businesses and individuals.",
+  bio: "Darius Momanyi is the Founder and CEO of DMN Solutions, a technology and digital solutions company focused on creating practical, reliable and modern solutions for businesses and individuals.",
   phone: "+254110554040",
   email: "dariusmomanyi678@gmail.com",
   whatsapp: "254110554040",
@@ -38,21 +38,22 @@ export default async function AboutPage() {
     whatsapp: (founderRaw.whatsapp?.trim() || DEFAULT_FOUNDER.whatsapp).replace(/[^0-9]/g, ""),
     photo: founderRaw.photo?.trim() || DEFAULT_FOUNDER.photo,
   };
+  f.name = f.name.replace(/\s*Nyabuti/gi, "");
+  f.bio = f.bio.replace(/\s*Nyabuti/gi, "");
   const founderAlt = `${f.name} — Founder and CEO of DMN Solutions`;
 
   return (
     <main>
       <section className="relative overflow-hidden bg-ink">
-        <div
-          aria-hidden
-          className="absolute inset-0 opacity-[0.10]"
-          style={{
-            backgroundImage:
-              "linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }}
+        <Image
+          src="https://images.unsplash.com/photo-1560264280-88b68371db39?auto=format&fit=crop&w=2000&q=80"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover opacity-40"
         />
-        <div aria-hidden className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/30 blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/60 to-ink/40" />
         <div className="relative mx-auto max-w-3xl px-6 py-16 sm:py-20">
           <h1 className="text-2xl font-semibold text-ink-foreground sm:text-3xl">About DMN Solutions</h1>
         </div>
@@ -90,8 +91,8 @@ export default async function AboutPage() {
         <div className="mt-16">
           <h2 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Meet the Founder</h2>
 
-          <div className="mt-4 grid gap-6 sm:grid-cols-5 sm:items-center">
-            <div className="relative mx-auto w-full max-w-xs sm:col-span-2 sm:max-w-none">
+          <div className="mt-4 grid gap-8 sm:grid-cols-5 sm:items-center">
+            <div className="relative mx-auto w-full max-w-[13rem] sm:col-span-2 sm:max-w-[15rem]">
               {/* offset copper accent + soft glow behind the frame */}
               <div aria-hidden className="absolute -bottom-3 -right-3 h-full w-full rounded-2xl bg-secondary/80" />
               <div aria-hidden className="absolute -inset-4 -z-10 rounded-3xl bg-primary/20 blur-2xl" />
